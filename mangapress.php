@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Manga+Press Comic Manager
-Plugin URI: http://www.silent-shadow.net/
+Plugin URI: http://manga-press.silent-shadow.net/
 Description: Turns Wordpress into a full-featured Webcomic Manager. Make sure to read both the "<a href="admin.php?page=webcomic_help">Manga+Press Help</a>" and "<a href="admin.php?page=theme-help">Template Tags</a>" sections understand how to configure and use the plugin with your own themes.
 Version: 1.0 RC1
 Author: Jessica Green
