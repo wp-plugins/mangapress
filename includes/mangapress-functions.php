@@ -325,10 +325,9 @@ global $mp_options, $userdata, $wpdb, $wp_rewrite;
 	
 	$image	=	getimagesize($comic[file_path]);
 	list($width, $height) = $image;
-	extract( $image );
 	
 	$wb_post->post_title	= $comic[title];
-	$wb_post->post_content	= "<img src=\"".$comic[file_path]."\" style=\"width:$width; height:$height; border: none;\" alt=\"".$comic[title]."\" title=\"".$comic[title]."\" />";
+	$wb_post->post_content	= "<img src=\"".$comic[file_path]."\" style=\"width:".$width."px; height:".$height."px; border: none;\" alt=\"".$comic[title]."\" title=\"".$comic[title]."\" />";
 	$wb_post->post_status	= 'publish';
 	$wb_post->post_category = $comic[categories];
 	$wb_post->post_author	= $userdata->ID;
