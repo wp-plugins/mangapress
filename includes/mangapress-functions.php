@@ -3,7 +3,7 @@
 		This is where the actual work gets done...
 		
 		@since:		0.1b
-		@modified:	1.0 RC1
+		@modified:	1.0 RC2
 
 */
 /*
@@ -305,7 +305,7 @@ function file_upload_error_check(&$file, $filename = '') {
 	
 	@Used by:	upload_comic()
 	@since:		0.1b
-	@modified:	1.0 RC1
+	@modified:	1.0 RC2
 */
 function add_comic($comic, $type = ''){
 global $mp_options, $userdata, $wpdb, $wp_rewrite;
@@ -323,11 +323,11 @@ global $mp_options, $userdata, $wpdb, $wp_rewrite;
 		$comic[categories][3] = $cat_parent->category_parent;
 	}
 	
-	$image	=	getimagesize($comic[file_path]);
-	list($width, $height) = $image;
+	list($width, $height)	=	getimagesize($comic[file_path]);
+	 
 	
 	$wb_post->post_title	= $comic[title];
-	$wb_post->post_content	= "<img src=\"".$comic[file_path]."\" style=\"width:".$width."px; height:".$height."px; border: none;\" alt=\"".$comic[title]."\" title=\"".$comic[title]."\" />";
+	$wb_post->post_content	= "<img src=\"".$comic[file_path]."\" width=\"$width\" height=\"$height\" style=\"border: none;\" alt=\"".$comic[title]."\" title=\"".$comic[title]."\" />";
 	$wb_post->post_status	= 'publish';
 	$wb_post->post_category = $comic[categories];
 	$wb_post->post_author	= $userdata->ID;
@@ -336,7 +336,7 @@ global $mp_options, $userdata, $wpdb, $wp_rewrite;
 	$wp_rewrite->feeds = array( 'feed', 'rdf', 'rss', 'rss2', 'atom' ); // this is needed to keep from getting the "Wrong datatype for second argument" error
 
 	if ($comic[file_thmb] != NULL){
-		$wb_post->post_excerpt	= "<img src=\"".$comic[file_thmb]."\" style=\"width: $mp_options[banner_width]px; height: $mp_options[banner_height]px\" alt=\"$comic[title]\" />";
+		$wb_post->post_excerpt	= "<img src=\"".$comic[file_thmb]."\" width=\"$mp_options[banner_width]\" height=\"$mp_options[banner_height]\" alt=\"$comic[title]\" />";
 	}
 	
 	$post_id = wp_insert_post($wb_post); // let Wordpress handle the rest
@@ -355,7 +355,6 @@ global $mp_options, $userdata, $wpdb, $wp_rewrite;
 		$attach->guid			= $comic[file_path];
 		$attach->post_date		= date('Y/m/d H:i:s');
 		$attach->post_date_gmt	= gmdate('Y/m/d H:i:s');
-		//$wp_rewrite->feeds = array( 'feed', 'rdf', 'rss', 'rss2', 'atom' ); // this is needed to keep from getting the "Wrong datatype for second argument" error
 	
 		wp_insert_attachment($attach, false, $post_id);
 		
@@ -520,7 +519,7 @@ global $mp_options;
 		certain Wordpress functions are called.
 		
 		@since:		0.1b
-		@modified:	0.5b
+		@modified:	1.0 RC2
 
 */
 /*
@@ -563,10 +562,10 @@ function add_header_info() {
 	
 	@Called by:	wp_footer()
 	@since:		1.0 RC1
-	@modified:	---
+	@modified:	1.0 RC2
 */
 function add_footer_info(){
-	echo "Powered by <a href=\"http://www.dumpster-fairy.com/tag/mangapress\">Manga+Press</a> ".MP_VERSION;
+	echo "<br />Powered by <a href=\"http://www.dumpster-fairy.com/tag/mangapress\">Manga+Press</a> ".MP_VERSION;
 }
 /*
 	add_meta_info()

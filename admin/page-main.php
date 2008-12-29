@@ -15,7 +15,7 @@
   <?php if ( $mpCheck->startCheck() ) { ?>
   <div id="newversion">
     <h3 class="dashboard-widget-title">New version of Manga+Press available !!!</h3>
-    <div class="dashboard-widget-content">Manga+Press 1.0 is available for download: <a href="#" target="_blank">Download here</a></div>
+    <div class="dashboard-widget-content">Manga+Press 1.0 RC2 is available for download: <a href="http://wordpress.org/extend/plugins/mangapress/" target="_blank">Download here</a></div>
   </div>
   <?php } ?>
   <div id="latest-news">
