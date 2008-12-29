@@ -1,4 +1,5 @@
 <?php if(preg_match('#' . basename(__FILE__) . '#', $_SERVER['PHP_SELF'])) { die('You are not allowed to call this page directly.'); }?>
+
 <?php
 	// get feed_messages
 	require_once(ABSPATH . WPINC . '/rss.php');
@@ -33,6 +34,7 @@
         </h3>
         <div id="dashboard_primary" class="postbox">
 			<?php
+				if (!defined('MAGPIE_CACHE_ON') ) { define('MAGPIE_CACHE_ON', 0); } // 2.7 Cache Bug
 				$rss = @fetch_rss('http://www.dumpster-fairy.com/?tag=mangapress&feed=rss2');
 				
 				if ( isset($rss->items) && 0 != count($rss->items) ) {
