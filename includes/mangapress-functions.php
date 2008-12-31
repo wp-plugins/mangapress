@@ -217,7 +217,7 @@ global $mp_options;
 			//$stat = stat( dirname( WP_CONTENT_DIR . "/" . $mp_options[comic_dir] ));
 			//$perms = $stat['mode'] & 0000777;
 			@mkdir($uploaddir);
-			chmod( $uploaddir, 0777);
+			@chmod( $uploaddir, 0777);
 		}
 	} else {
 		$uploaddir	= WP_CONTENT_DIR . "/" . $mp_options[comic_dir];
