@@ -3,7 +3,7 @@
 Plugin Name: Manga+Press Comic Manager
 Plugin URI: http://manga-press.silent-shadow.net/
 Description: Turns Wordpress into a full-featured Webcomic Manager. Make sure to read both the "<a href="admin.php?page=webcomic_help">Manga+Press Help</a>" and "<a href="admin.php?page=theme-help">Template Tags</a>" sections understand how to configure and use the plugin with your own themes.
-Version: 1.0 RC2
+Version: 1.0 RC2.5
 Author: Jessica Green
 Author URI: http://www.dumpster-fairy.com
 */
@@ -36,6 +36,8 @@ Author URI: http://www.dumpster-fairy.com
 				comic posting feature, sort-by-date (the comics table needed a post_date column.
 	1.0 RC1	-	General maintenance, fixing up look-and-feel of admin side. Putting together companion theme.
 	1.0 RC2	-	Modified add_comic(), add_footer_info()
+	1.0 RC2.5 -	Found a major bug involving directory/file permissions. Has been corrected, but I'm keeping my
+				eye on this one for future reference. See website for a fix.
 */
 global $wp_rewrite, $wpdb, $wp_version, $mp_options, $messages;
 
@@ -46,7 +48,7 @@ include_once("includes/mangapress-template-functions.php");
 include_once("mangapress-display-tabs.php");
 
 if (!defined('MP_VERSION')) {
-	define('MP_VERSION',	'1.0 RC2');
+	define('MP_VERSION',	'1.0 RC2.5');
 }
 if (!defined('MP_DB_VERSION')) {
 	define('MP_DB_VERSION', '1.0');

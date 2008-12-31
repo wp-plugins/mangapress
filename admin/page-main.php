@@ -1,5 +1,4 @@
 <?php if(preg_match('#' . basename(__FILE__) . '#', $_SERVER['PHP_SELF'])) { die('You are not allowed to call this page directly.'); }?>
-
 <?php
 	// get feed_messages
 	require_once(ABSPATH . WPINC . '/rss.php');
@@ -16,7 +15,7 @@
   <?php if ( $mpCheck->startCheck() ) { ?>
   <div id="newversion">
     <h3 class="dashboard-widget-title">New version of Manga+Press available !!!</h3>
-    <div class="dashboard-widget-content">Manga+Press 1.0 RC2 is available for download: <a href="http://wordpress.org/extend/plugins/mangapress/" target="_blank">Download here</a></div>
+    <div class="dashboard-widget-content">Manga+Press 1.0 is available for download: <a href="#" target="_blank">Download here</a></div>
   </div>
   <?php } ?>
   <div id="latest-news">
@@ -34,7 +33,6 @@
         </h3>
         <div id="dashboard_primary" class="postbox">
 			<?php
-				if (!defined('MAGPIE_CACHE_ON') ) { define('MAGPIE_CACHE_ON', 0); } // 2.7 Cache Bug
 				$rss = @fetch_rss('http://www.dumpster-fairy.com/?tag=mangapress&feed=rss2');
 				
 				if ( isset($rss->items) && 0 != count($rss->items) ) {

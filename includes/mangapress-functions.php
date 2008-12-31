@@ -121,7 +121,7 @@ global $wpdb, $mp_options;
 	
 	@Used by:	page-comic-options.php
 	@since:		0.1b
-	@modified:	1.0 RC1
+	@modified:	1.0 RC2
 */
 function upload_overlay_image(&$file){
 global $mp_options;
@@ -154,6 +154,10 @@ global $mp_options;
 	
 	// if $status returns true...	
 	if($status){
+		$stat = stat( dirname( $uploadfile ));
+		$perms = $stat['mode'] & 0000666;
+		@ chmod( $uploadfile, $perms );
+
 		update_option('comic_banner_overlay_image', $fname, '', 'yes');
 
 		list($width, $height)	=	getimagesize($fname);
@@ -181,7 +185,7 @@ global $mp_options;
 	
 	@Used by:	page-new-comic.php
 	@since:		0.1b
-	@modified:	0.5b
+	@modified:	1.0 RC2
 */
 function upload_comic(&$file){
 global $mp_options;
@@ -210,7 +214,10 @@ global $mp_options;
 		//
 		// check if uploading directory exists; if not..and if permissions allow...make it
 		if (!is_dir($uploaddir)) {
+			//$stat = stat( dirname( WP_CONTENT_DIR . "/" . $mp_options[comic_dir] ));
+			//$perms = $stat['mode'] & 0000777;
 			@mkdir($uploaddir);
+			chmod( $uploaddir, 0777);
 		}
 	} else {
 		$uploaddir	= WP_CONTENT_DIR . "/" . $mp_options[comic_dir];
@@ -227,6 +234,12 @@ global $mp_options;
 	
 	// if $status returns true then add the comic to the database...	
 	if($status){
+		//
+		// to keep permissions where they should be
+		$stat = stat( dirname( $uploadfile ));
+		$perms = $stat['mode'] & 0000666;
+		@ chmod( $uploadfile, $perms );
+
 		 // if GD library is present, create a banner from the uploaded file
 		 // or an image uploaded with comic, if present
 		if (function_exists('gd_info') && $mp_options[make_banner]){
@@ -240,6 +253,10 @@ global $mp_options;
 			// since is_uploaded_file checked out alright, now move the file...
 			$statusmoved = @move_uploaded_file($file['bannerfile']['tmp_name'], $bannerfile);
 			if ($bannerstatus == 0 && $statusmoved) {
+				$stat = stat( dirname( $bannerfile ));
+				$perms = $stat['mode'] & 0000666;
+				@ chmod( $bannerfile, $perms );
+
 				$thmb_file	=	create_banner_image($bannerfile);
 				$thmb_file	=	basename($thmb_file);
 				$thmb_file	=	$filepath . "/" . $thmb_file;
@@ -405,7 +422,7 @@ function check_mime_type($type){
 	
 	@Used by:	upload_comic()
 	@since:		0.1b
-	@modified:	0.3b
+	@modified:	1.0 RC2
 */
 function create_banner_image($file, $title = ''){
 global $mp_options;
@@ -510,6 +527,11 @@ global $mp_options;
 	if ($mp_options[use_overlay]){
 		imagedestroy($h_banner_png);	// image handle created for the alpha PNG overlay
 	}
+
+	$stat = stat( dirname( $thmb_file ));
+	$perms = $stat['mode'] & 0000666;
+	@ chmod( $thmb_file, $perms );
+
 	
 	return $thmb_file;
 }
@@ -530,7 +552,7 @@ global $mp_options;
 
 	@Called by:	wp_head()
 	@since:		0.5b
-	@modified:	0.5b
+	@modified:	1.0
 */
 function add_navigation_css(){
 	echo "<!-- Begin Manga+Press Navigation CSS -->\n";
@@ -541,7 +563,7 @@ function add_navigation_css(){
 	echo "\t ul.comic-nav  { margin: 0; padding: 0; white-space: nowrap; }\n";
 	echo "\t ul.comic-nav li { display: inline;	list-style-type: none; }\n";
 	echo "\t ul.comic-nav a { text-decoration: none; padding: 3px 10px; }\n";
-	echo "\t ul.comic-nav a:link, .mycomic_navigation a:visited { color: #ccc;	text-decoration: none; }\n";
+	echo "\t ul.comic-nav a:link, ul.comic-nav a:visited { color: #ccc;	text-decoration: none; }\n";
 	echo "\t ul.comic-nav a:hover { text-decoration: none; }\n";
 	echo "\t ul.comic-nav li:before{ content: \"\"; }\n";
 	echo "</style>\n";
