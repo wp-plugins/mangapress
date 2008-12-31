@@ -38,6 +38,7 @@ Author URI: http://www.dumpster-fairy.com
 	1.0 RC2	-	Modified add_comic(), add_footer_info()
 	1.0 RC2.5 -	Found a major bug involving directory/file permissions. Has been corrected, but I'm keeping my
 				eye on this one for future reference. See website for a fix.
+	
 */
 global $wp_rewrite, $wpdb, $wp_version, $mp_options, $messages;
 
@@ -48,7 +49,7 @@ include_once("includes/mangapress-template-functions.php");
 include_once("mangapress-display-tabs.php");
 
 if (!defined('MP_VERSION')) {
-	define('MP_VERSION',	'1.0 RC2.5');
+	define('MP_VERSION',	'1.0 RC2');
 }
 if (!defined('MP_DB_VERSION')) {
 	define('MP_DB_VERSION', '1.0');
