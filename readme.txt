@@ -4,7 +4,7 @@ Donate link: http://manga-press.silent-shadow.net/
 Tags: webcomics, online comics
 Requires at least: 2.6.5
 Tested up to: 2.7
-Stable tag: trunk
+Stable tag: 1.0
 
 Manga+Press is a webcomic managment system for Wordpress.
 
