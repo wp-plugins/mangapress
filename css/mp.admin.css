@@ -1,5 +1,8 @@
 @charset "utf-8";
 /* CSS Document */
+div#row_confirm { border: 1px solid red; padding: 5px; margin: 5px; width: 50%; }
+.yes-btn { background: #6F9; border: 1px solid green!important; width: 200px; }
+.remove-btn { background:#FCC; border: 1px solid red!important; width: 200px;}
 #mangapress-wrap{ }
 #mangapress-wrap #latest-news {
 	border: 1px solid;
@@ -21,6 +24,9 @@
 	float:left;
 	padding:0 6px;
 	text-align:left;
+}
+#mangapress-wrap #dashboard-widgets {
+	width: 50%; float: left;
 }
 #mangapress-wrap a.rbutton {
 	-moz-border-radius-bottomleft: 6px;

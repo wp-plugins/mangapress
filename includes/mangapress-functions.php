@@ -3,7 +3,7 @@
 		This is where the actual work gets done...
 		
 		@since:		0.1b
-		@modified:	1.0 RC2
+		@modified:	2.0 beta
 
 */
 /*
@@ -12,39 +12,28 @@
 	returns true or a number based on error
 	@Used by:	page-comic-options.php
 	@since:		0.1b
-	@modified:	0.5b
+	@modified:	2.0 beta
 */
 function update_options($options, $file = ''){
-global $mp_options, $wpdb;
-
-	extract($options);
+global $mp_options;
+	
+	extract( $options ); // so we can get $action
 	
 	switch($action):
 	
 		case 'update_options':
 			$status = 1;
 			update_option('comic_latest_default_category',	$options[latest],		'',	'yes');
-			update_option('comic_order_by', 				$options[order_by],	'',	'yes');
-			update_option('comic_latest_page',				$options[latest_page],'',	'yes');
-			update_option('comic_archive_page',				$options[archive_page],'',	'yes');
+			update_option('comic_order_by', 				$options[order_by],		'',	'yes');
+			update_option('comic_latest_page',				$options[latest_page],	'',	'yes');
+			update_option('comic_archive_page',				$options[archive_page],	'',	'yes');
 			update_option('comic_use_default_css',			$options[nav_css],		'',	'yes');
 			
-			$mp_options[latestcomic_cat]	= get_option('comic_latest_default_category');
+			$mp_options[latestcomic_cat]	=	get_option('comic_latest_default_category');
 			$mp_options[order_by]			=	get_option('comic_order_by');
 			$mp_options[latestcomic_page]	=	get_option('comic_latest_page');
-			$mp_options[comic_archive_page]	= get_option('comic_archive_page');
-			$mp_options[nav_css]			= get_option('comic_use_default_css');
-		break;
-
-		case 'set_dir':
-			update_option('series_organize', $options[organize_by_series], '', 'yes');
-			$mp_options[series_organize] = (int)get_option('series_organize');
-
-			$status = 1;
-			if ($options[new_dir] != ''){
-				$status	=	set_new_dir($options[new_dir]);
-			}
-		
+			$mp_options[comic_archive_page]	=	get_option('comic_archive_page');
+			$mp_options[nav_css]			=	get_option('comic_use_default_css');
 		break;
 
 		case 'set_image_options':
@@ -56,10 +45,12 @@ global $mp_options, $wpdb;
 					$status	=	upload_overlay_image($file);
 				}
 			}
-			update_option('comic_use_overlay', $options[use_overlay], '', 'yes');
-			update_option('comic_make_banner', $options[make_banner],	'',	'yes');		
+			update_option('comic_use_overlay',	$options[use_overlay],	'', 'yes');
+			update_option('comic_make_banner',	$options[make_banner],	'',	'yes');
+			update_option('comic_make_thmb', 	$options[make_thumb],	'',	'yes');
 			$mp_options[use_overlay]		=	(bool)get_option('comic_use_overlay');
 			$mp_options[make_banner]		=	(bool)get_option('comic_make_banner');
+			$mp_options[make_thumb]			=	(bool)get_option('comic_make_thmb');
 		break;
 
 		case 'set_image_dimensions':
@@ -71,7 +62,7 @@ global $mp_options, $wpdb;
 			
 			$status = 1;		
 		break;
-		
+				
 		default:
 		break;
 	
@@ -81,469 +72,321 @@ global $mp_options, $wpdb;
 
 }
 /*
-	set_new_dir()
+	add_comic()
 	
-	Used by page-comic-options.php to set a directory
-	inside the wp-content directory for comic page
-	uploads.
+	This function adds the comic to the Wordpress database as a post
+	using the Wordpress function wp_insert_page. Was expanded in the
+	beta release of the 2.0 branch to take over the functionality of
+	upload_comic()
 	
-	@Used by:	page-comic-options.php
+	@Used by:	post-new-comic.php
 	@since:		0.1b
-	@modified:	0.3b
+	@modified:	2.0 beta
 */
-function set_new_dir($dir_name){
-global $wpdb, $mp_options;
-
-	if ($dir_name	==	''){
-		return 5;
+function add_comic(&$file, $post_info){
+global $mp_options, $wpdb, $wp_rewrite;
+	
+	if ($post_info[title] == '') { return '<strong>Empty Title-field!</strong> Comic not added.'; }
+	$now = current_time('mysql'); // let's grab the time...need this for later on...
+	
+	$comicfile = wp_handle_upload($file[userfile], false, $now); // use Wordpress's native upload functions...makes more sense
+	$error = $comicfile[error];
+	
+	// let's check for errors.
+	if ($error != '') {
+		return $error;
 	} else {
-		$new_dir	=	WP_CONTENT_DIR."/".$dir_name;
-		$status	=	@realpath($new_dir);
+		
+		// if the comic page was uploaded successfully, 
+		// check for option to make banners AND if GD Library is available...
+		if (function_exists('gd_info') && $mp_options[make_banner]) {
+			
+			$banner_width = $mp_options[banner_width];
+			$banner_height = $mp_options[banner_height];
+			
+			$bannerfile = wp_handle_upload($file[bannerfile], false, $now);
 
-		if ($status) {
-			update_option('comic_default_dir',	$dir_name,	'',	'yes');
-			return 6;
+			if ($bannerfile[error] == '') { // no errors, banner was uploaded successfully...
+			
+				if ($mp_options[use_overlay] && $mp_options[banner_overlay][path] != ''){
+					
+					$bnfile = create_banner_image($bannerfile);
+					if ($bnfile == NULL) { $msg = "<br />Warning: Banner not generated!"; }
+				}else{
+					// let's get all of the information together and
+					// put it into an array...
+					$file = image_resize($bannerfile['file'], $banner_width, $banner_height, true );
+					if ($file == '') { $file = $bannerfile['file']; }
+					$url	= dirname( $comicfile['url'] ).'/'.basename( $file );
+					$img	= getimagesize($file);
+					$mime	= image_type_to_mime_type($img[2]);
+					$bnfile = compact( explode(' ', 'file url mime banner_width banner_height') );																																															
+				}
+			} else { // either banner upload didn't succeed, or there wasn't a banner uploaded...
+				// in that case, use the comic itself...
+				if ($mp_options[use_overlay] && $mp_options[banner_overlay][path] != '') { // if banner skins are enabled...
+
+					$bnfile = create_banner_image($comicfile);
+					if ($bnfile == NULL) { $msg = "<br />Warning: Banner not generated!"; }
+
+				} else { // otherwise...use image_resize()...			
+				
+					$file = image_resize($comicfile['file'], $banner_width, $banner_height, true );
+					$url	= dirname( $comicfile['url'] ).'/'.basename( $file );
+					$img	= getimagesize($file);
+					$mime	= image_type_to_mime_type($img[2]);
+					$bnfile = compact( explode(' ', 'file url mime banner_width banner_height') );																																															
+				}
+			}
+		}
+
+		// $medium_side = get_option('medium_size_w');
+
+		// This will do for now...
+		//if ($mp_options[make_thumb]){
+		//	$thumb_side	= get_option('thumbnail_size_w');
+		//	$thmb_path	= wp_create_thumbnail( $comicfile['file'], $thumb_side	); // make small thumbnail...
+		//}
+		
+		// Create a new Comic Post object to pass to wp_insert_post()....
+		$newcomic = new WP_ComicPost($post_info, $comicfile, $bnfile);
+		
+		// this is needed to keep from getting the "Wrong datatype for second argument" error		
+		$wp_rewrite->feeds = array( 'feed', 'rdf', 'rss', 'rss2', 'atom' );
+		
+		$post_id = wp_insert_post($newcomic); // let Wordpress handle the rest
+		
+		// if wp_insert_post() succeeds, now we add the comic file as an attachment to the post...
+		if ($post_id != 0){
+			$attach = new WP_ComicPost($post_info, $comicfile, NULL, 'attachment');
+			$attachID = wp_insert_attachment($attach, $comicfile['file'], $post_id);
+			if ($attachID != 0) {
+				wp_update_attachment_metadata( $attachID, wp_generate_attachment_metadata( $attachID, $comicfile['file'] ) );
+			}
+			
+			add_post_meta($post_id, 'comic', '1'); // adds required meta data to the post
+			$sql	=	$wpdb->prepare("INSERT INTO " . $wpdb->mpcomics . " (post_id, post_date) VALUES ('".$post_id."', '".$newcomic->post_date."') ;");
+			$wpdb->query($sql);
+			return 'Comic Added!'.$msg; // return post_id if it works...if not, return 0
 		} else {
-			return 7;
+			return 'Error! Comic not added...';
 		}
 	}
 }
-
 /*
 	upload_overlay_image()
 
-	this function is pretty much identical to upload_comic()
-	except the series name isn't used; the image is uploaded
-	to the root comic directory.
 	returns a message code used in page-comic-options.php
 	to display a message indicating if image has been
 	uploaded successfully, or if it has failed.
 	
 	@Used by:	page-comic-options.php
 	@since:		0.1b
-	@modified:	1.0 RC2
+	@modified:	2.0 beta
 */
 function upload_overlay_image(&$file){
 global $mp_options;
-	
 	// let's check and make sure the file uploaded alright
-	$status = (int)file_upload_error_check($file, 'overlay_image');
+	$status = (int)file_upload_error_check($file['overlay_image']);
 	if ($status != 0) { // if $status doesn't equal 0 then there's an error
 		return $status;
-		exit ();
-	}
-	
-	/*	so now we know that the file is uploaded and it is of the
-		correct type, so now lets start the processing....
-	*/
-	 // directory that file is being uploaded to: /home/www/[wordpress-install]/wp-content/comic/
-	 // unless the organize by series option is enabled, then create a folder that corresponds to the
-	$uploaddir	= WP_CONTENT_DIR . "/" . $mp_options[comic_dir];
-
-	// URL of the directory that file has been uploaded to: http://www.mydomain.com/wp-content/comic/
-	$filepath	=	WP_CONTENT_URL . "/" . $mp_options[comic_dir];
-	$uploadfile = 	$uploaddir . "/" . basename($file['overlay_image']['name']);
-	
-	// URL of the directory that file has been uploaded to: http://www.mydomain.com/wp-content/comic/
-	$filepath	=	WP_CONTENT_URL . "/" . $mp_options[comic_dir];
-	$fname		=	$filepath . "/" . basename($file['overlay_image']['name']);
-
-
-	// since is_uploaded_file checked out alright, now move the file...
-	$status = @move_uploaded_file($file['overlay_image']['tmp_name'], $uploadfile);
-	
-	// if $status returns true...	
-	if($status){
-		$stat = stat( dirname( $uploadfile ));
-		$perms = $stat['mode'] & 0000666;
-		@ chmod( $uploadfile, $perms );
-
-		update_option('comic_banner_overlay_image', $fname, '', 'yes');
-
-		list($width, $height)	=	getimagesize($fname);
-		
-		update_option('banner_width',	$width,		'',	'yes');
-		update_option('banner_height',	$height,	'',	'yes');
-
-		$mp_options[banner_overlay]		=	get_option('comic_banner_overlay_image');
-		$mp_options[banner_width]		=	(int)get_option('banner_width');
-		$mp_options[banner_height]		=	(int)get_option('banner_height');
-		
 	} else {
-		return 10; // 10 is the unable to upload error code. if $status is false, then move_uploaded_file() failed.
+		$siteurl = get_settings('siteurl');
+		
+		// prepend ABSPATH to $dir and $siteurl to $url if they're not already there
+		$path = str_replace(ABSPATH, '', trim(get_settings('upload_path')));
+		$dir = ABSPATH . $path;
+		$url = trailingslashit($siteurl) . $path;
+		
+		if ( $dir == ABSPATH ) { // the option was empty
+			$dir = ABSPATH . 'wp-content/uploads';
+		}
+		
+		if ( defined('UPLOADS') ) {
+			$dir = ABSPATH . UPLOADS;
+			$url = trailingslashit($siteurl) . UPLOADS;
+		}
+	
+		/*	so now we know that the file is uploaded and it is of the
+			correct type, so now lets start the processing....
+		*/
+		// PATH of the file...
+		$upload_dir	= 	$dir . "/" . basename($file['overlay_image']['name']);
+		
+		// URL of the file...
+		$upload_url	=	$url . "/" . basename($file['overlay_image']['name']);
+	
+		// since is_uploaded_file checked out alright, now move the file...
+		$status = @move_uploaded_file($file['overlay_image']['tmp_name'], $upload_dir);
+		
+		// if $status returns true...	
+		if($status){
+			$stat = stat( dirname( $upload_dir ));
+			$perms = $stat['mode'] & 0000666;
+			@ chmod( $uploadfile, $perms );
+	
+			// let's pack everything into an array for easy storage...
+			$skin_options = array ("path" => $upload_dir, "url" => $upload_url);
+			update_option('comic_banner_overlay_image', serialize($skin_options), '', 'yes');
+	
+			list($width, $height)	=	getimagesize($upload_dir);
+			
+			update_option('banner_width',	$width,		'',	'yes');
+			update_option('banner_height',	$height,	'',	'yes');
+	
+			$mp_options[banner_overlay]		=	unserialize(get_option('comic_banner_overlay_image'));
+			$mp_options[banner_width]		=	(int)get_option('banner_width');
+			$mp_options[banner_height]		=	(int)get_option('banner_height');
+			
+		} else {
+			return 10; // 10 is the "unable to upload" error code. if $status is false, then move_uploaded_file() failed.
+		}
 	}
 }
-
 /*
-	upload_comic()
-
-	handles the uploading of a comic image and an optional
-	banner for the comic page.
-	returns a message code used in page-new-comic.php
-	to display a message indicating a file error or
-	if comic has been posted successfully.
+	mime_check()
 	
-	@Used by:	page-new-comic.php
+	Used by upload_overlay_image() to determine
+	if file being uploaded is actually an image
+	and not something else...
+	returns false if the mime-types don't match.
+	
+	@Used by:	upload_overlay_image()
 	@since:		0.1b
-	@modified:	1.0 RC2
+	@modified:	2.0 beta
 */
-function upload_comic(&$file){
-global $mp_options;
+function mime_check($type){
 
-	// let's check and make sure the file uploaded alright
-	$status = (int)file_upload_error_check($file, 'userfile');
-	if ($status != 0) { // if $status doesn't equal 0 then there's an error
-		return $status;
-		exit ();
-	}
+	$types = array ( "image/jpeg", "image/gif", "image/png" );
 
-	/*	so now we know that the file is uploaded and it is of the
-		correct type, so now lets start the processing....
-	*/
-	 // directory that file is being uploaded to: /home/www/[wordpress-install]/wp-content/comic/
-	 // unless the organize by series option is enabled, then create a folder that corresponds to the
-	 // category-name passed by $_POST[categories][2]
-	
-	if ($mp_options[series_organize]) {
-		$cat	=	get_cat_name($_POST[categories][2]);
-		$series_dir	=	sanitize_title_with_dashes($cat);
-		$uploaddir	= WP_CONTENT_DIR . "/" . $mp_options[comic_dir] . "/" . $series_dir;
-
-		// URL of the directory that file has been uploaded to: http://www.mydomain.com/wp-content/comic/
-		$filepath	=	WP_CONTENT_URL . "/" . $mp_options[comic_dir] . "/" . $series_dir;
-		//
-		// check if uploading directory exists; if not..and if permissions allow...make it
-		if (!is_dir($uploaddir)) {
-			//$stat = stat( dirname( WP_CONTENT_DIR . "/" . $mp_options[comic_dir] ));
-			//$perms = $stat['mode'] & 0000777;
-			@mkdir($uploaddir);
-			@chmod( $uploaddir, 0777);
-		}
+	if (!in_array($type, $types) ) {
+		return false;
 	} else {
-		$uploaddir	= WP_CONTENT_DIR . "/" . $mp_options[comic_dir];
-		// URL of the directory that file has been uploaded to: http://www.mydomain.com/wp-content/comic/
-		$filepath	=	WP_CONTENT_URL . "/" . $mp_options[comic_dir];
+		return true;
 	}
-	 
-	 // $uploadfile: combines $uploaddir with the filename of the uploaded file. needed for move_uploaded_file()
-	$uploadfile = 	$uploaddir . "/" . basename($file['userfile']['name']);
-	$fname		=	$filepath . "/" . basename($file['userfile']['name']);
-
-	// since is_uploaded_file checked out alright, now move the file...
-	$status = @move_uploaded_file($file['userfile']['tmp_name'], $uploadfile);
-	
-	// if $status returns true then add the comic to the database...	
-	if($status){
-		//
-		// to keep permissions where they should be
-		$stat = stat( dirname( $uploadfile ));
-		$perms = $stat['mode'] & 0000666;
-		@ chmod( $uploadfile, $perms );
-
-		 // if GD library is present, create a banner from the uploaded file
-		 // or an image uploaded with comic, if present
-		if (function_exists('gd_info') && $mp_options[make_banner]){
-			//
-			// if the banner image has been uploaded successfully...
-			$bannerstatus = (int)file_upload_error_check($file,'bannerfile');
-
-			$bannerfile = 	$uploaddir . "/" . basename($file['bannerfile']['name']);
-			$bannerfname =	$filepath . "/" . basename($file['bannerfile']['name']);
-			//
-			// since is_uploaded_file checked out alright, now move the file...
-			$statusmoved = @move_uploaded_file($file['bannerfile']['tmp_name'], $bannerfile);
-			if ($bannerstatus == 0 && $statusmoved) {
-				$stat = stat( dirname( $bannerfile ));
-				$perms = $stat['mode'] & 0000666;
-				@ chmod( $bannerfile, $perms );
-
-				$thmb_file	=	create_banner_image($bannerfile);
-				$thmb_file	=	basename($thmb_file);
-				$thmb_file	=	$filepath . "/" . $thmb_file;
-			} else { // if neither checked out
-				$thmb_file	=	create_banner_image($uploadfile);
-				$thmb_file	=	basename($thmb_file);
-				$thmb_file	=	$filepath . "/" . $thmb_file;
-			}
-		} else {
-			$thmb_file	=	NULL;
-		}
-		$comic_post = array(
-						"title" => $_POST[title], 
-						"categories" => $_POST[categories], 
-						"file_upload"	=> $uploadfile,
-						"file_path" => $fname, 
-						"file_thmb" => $thmb_file
-						);
-						
-		add_comic($comic_post, $file['userfile']['type']);
-	}
-	
-	return $status;
 }
 /*
 	file_upload_error_check()
 
 	This function is the error-checker for
-	upload_comic() and upload_overlay_image()
-	and returns the error codes	used by page-new-comic.php
-	and page-comic-options.php
+	upload_overlay_image() and returns the
+	error codes	used by page-comic-options.php
 	
-	@Used by:	upload_comic(), upload_overlay_image()
+	@Used by:	upload_overlay_image()
 	@since:		0.3b
-	@modified:	0.5b
+	@modified:	2.0 beta
 */
-function file_upload_error_check(&$file, $filename = '') {
-		// check for file size errors and return appropriate error code
-	if ($file[$filename]['error'] == UPLOAD_ERR_FORM_SIZE) {
+function file_upload_error_check(&$file) {
+	// check for file size errors and return appropriate error code
+	if ($file['error'] == UPLOAD_ERR_FORM_SIZE) {
 		return 9;
-		exit ();
 	}
 	
 	/* make sure that file has been uploaded via HTTP_POST...
 	   If not, then terminate script and return error code
 	*/
-	if (!is_uploaded_file($file[$filename]['tmp_name'])){
+	if (!is_uploaded_file($file['tmp_name'])){
 		return 10;
-		exit ();
 	}
 	
 	// check to make sure that the right type of file is being uploaded...
-	if (!check_mime_type($file[$filename]['type'])) {
+	if (!mime_check($file['type'])) {
 		return 8;
-		exit ();
 	}
 }
-/*
-	add_comic()
-	
-	this function adds the comic to the Wordpress database as a post
-	using the Wordpress function wp_insert_page.
-	
-	@Used by:	upload_comic()
-	@since:		0.1b
-	@modified:	1.0 RC2
-*/
-function add_comic($comic, $type = ''){
-global $mp_options, $userdata, $wpdb, $wp_rewrite;
-	
-	get_currentuserinfo(); // needed to retrieve ID of currently logged in user
-
-	// initialize post object
-	$wb_post = new comic_post();
-	// since $categories[2] is our series comic,
-	// we want to find out its parent is another series
-	// if it is, we want to include that one as well
-	$cat_parent = get_category($comic[categories][2]);
-	
-	if ($cat_parent->category_parent != $mp_options[latestcomic_cat]) {
-		$comic[categories][3] = $cat_parent->category_parent;
-	}
-	
-	list($width, $height)	=	getimagesize($comic[file_path]);
-	 
-	
-	$wb_post->post_title	= $comic[title];
-	$wb_post->post_content	= "<img src=\"".$comic[file_path]."\" width=\"$width\" height=\"$height\" style=\"border: none;\" alt=\"".$comic[title]."\" title=\"".$comic[title]."\" />";
-	$wb_post->post_status	= 'publish';
-	$wb_post->post_category = $comic[categories];
-	$wb_post->post_author	= $userdata->ID;
-	$wb_post->post_date		= date('Y/m/d H:i:s');
-	$wb_post->post_date_gmt = gmdate('Y/m/d H:i:s');
-	$wp_rewrite->feeds = array( 'feed', 'rdf', 'rss', 'rss2', 'atom' ); // this is needed to keep from getting the "Wrong datatype for second argument" error
-
-	if ($comic[file_thmb] != NULL){
-		$wb_post->post_excerpt	= "<img src=\"".$comic[file_thmb]."\" width=\"$mp_options[banner_width]\" height=\"$mp_options[banner_height]\" alt=\"$comic[title]\" />";
-	}
-	
-	$post_id = wp_insert_post($wb_post); // let Wordpress handle the rest
-	if ($post_id == 0){
-		return 0;
-	}else{
-		// Now, we want Wordpress to add the image as an attachment
-		$attach = new comic_post();
-		$attach->post_title		= $comic[title];
-		$attach->post_content	= "Attachment for ".$comic[title];
-		$attach->post_status	= 'publish';
-		$attach->post_type		= 'attachment';
-		$attach->post_mime_type	= $mime;
-		$attach->post_category	= $comic[categories];
-		$attach->post_author	= $userdata->ID;
-		$attach->guid			= $comic[file_path];
-		$attach->post_date		= date('Y/m/d H:i:s');
-		$attach->post_date_gmt	= gmdate('Y/m/d H:i:s');
-	
-		wp_insert_attachment($attach, false, $post_id);
-		
-		add_post_meta($post_id, 'comic', '1'); // adds required meta data to the post
-		$sql	=	$wpdb->prepare("INSERT INTO " . $wpdb->mpcomics . " (post_id, post_date) VALUES ('".$post_id."', '".$wb_post->post_date."') ;");
-		$wpdb->query($sql);
-		return $post_id; // return post_id if it works...if not, return 0
-	}
-}
-/*
-	check_mime_type()
-	
-	Used by upload_comic() and upload_overlay_image()
-	to determine if file being uploaded is actually an
-	image and not something else...
-	returns false if the mime-types don't match.
-	
-	@Used by:	upload_comic(), upload_overlay_image()
-	@since:		0.1b
-	@modified:	0.2b
-*/
-function check_mime_type($type){
-
-	switch($type){
-		case "image/jpeg":
-			return true;
-		break;
-		
-		case "image/gif":
-			return true;
-		break;
-		
-		case "image/png":
-			return true;
-		break;
-		
-		default:
-			return false;
-		break;
-	}
-}
-/*
-	create_banner_image()
-	
-	Used by upload_comic() to generate a banner image
-	from the comic or combine an uploaded banner with
-	an alpha-transparency PNG "overlay" image.
-	
-	@Used by:	upload_comic()
-	@since:		0.1b
-	@modified:	1.0 RC2
-*/
-function create_banner_image($file, $title = ''){
+/***
+ *	create_banner_image()
+ *	
+ *	Used by add_comic() to generate a banner image
+ *	from the comic and/or combine an uploaded banner with
+ *	an alpha-transparency PNG banner skin image.
+ *	
+ *	@Used by:	add_comic()
+ *	@since:		0.1b
+ *	@modified:	2.0 beta
+***/
+function create_banner_image($file){
 global $mp_options;
 
 	// first, let's grab info from the image file
-	list($width, $height, $type)	=	getimagesize($file);
+	list($width, $height, $type)	=	getimagesize($file['file']);
 
-	// then process the overlay file, if one is used...
-	if ($mp_options[use_overlay]) {
-		$file_png =	$mp_options[banner_overlay];
-		list($banner_width, $banner_height)	=	getimagesize($file_png);
-	} else {
-		$banner_width	=	$mp_options[banner_width];
-		$banner_height	=	$mp_options[banner_height];
-	}
+	// load banner skin...
+	$file_png =	$mp_options[banner_overlay][path];
+	list($banner_width, $banner_height)	=	getimagesize($file_png);
 	
-	if (($height > $banner_height ) && ($width > $banner_width)){ // if height & width are greater than the banner width, then shrink the image
-		$res_height	=	$height * 0.75;
-		$res_width	=	$width	* 0.75;
-	} else {
-		$res_height	=	$height;
-		$res_width	=	$width;
-	}
-	
-	// let's say that our banner is 230x30 so we want our x, y to reflect that
-	// now, lets generate random x,  y coordinates from hieght & width
-	$x	=	rand(1, $res_width - $banner_width);
-	$y	=	rand(1, $res_height - $banner_height);
-	$n_width	=	$x + $banner_width;
-	$n_height	=	$y + $banner_height;
-	
-	
-	
-	
-	$h_banner_img	=	imagecreatetruecolor($banner_width, $banner_height);
-	if ($mp_options[use_overlay]){
-		$h_banner_png	=	imagecreatefrompng($file_png);
-	}
-	
-	if (!$h_banner_img) {
+	// this is the holder image for the banner file	
+	$h_banner_img	=	@imagecreatetruecolor($banner_width, $banner_height);
+	 // holder for banner skin...	
+	$h_banner_png	=	@imagecreatefrompng($file_png);
+
+	// if one of the two imagecreate functions fail, return NULL
+	if (!$h_banner_img || !$h_banner_png) {
 		return NULL;
-		exit ();
-	}
-	
-	$h_resampled	=	imagecreatetruecolor($res_width, $res_height);
-	
-	// now here is the fun part...dividing the function up by image type...
-	switch($type){
-		case IMAGETYPE_GIF:
-			$himg2	=	imagecreatefromgif($file);	
-			$thmb_file	=	$file.".thmb.gif";
-		break;
+	} else {
 		
-		case IMAGETYPE_JPEG:
-			$himg2	=	imagecreatefromjpeg($file);	
-			$thmb_file	=	$file.".thmb.jpg";
-		break;
+		// now here is the fun part...dividing the function up by image type...
+		// call_user_func() is very handy for this sort of thing...
+		$types	= array(IMAGETYPE_JPEG => "jpeg", IMAGETYPE_PNG => "png", IMAGETYPE_GIF => "gif");
+		$ext	= array(IMAGETYPE_JPEG => ".jpg", IMAGETYPE_PNG => ".png", IMAGETYPE_GIF => ".gif");
+		$fname	= basename( $file['file'] );
+		$fpath	= dirname( $file['file'] );
 		
-		case IMAGETYPE_PNG:
-			$himg2	=	imagecreatefrompng($file);	
-			$thmb_file	=	$file.".thmb.png";
-		break;
+		$himg2 = call_user_func( 'imagecreatefrom'.$types[$type], $file['file'] );
+		$thmb_file = $fpath . '/' .str_replace(array('.jpeg','.jpe','.jpg', '.gif', '.png'), '', $fname).".thmb".$ext[$type];
+
+		// let's do some math and get an aspect ratio...
+		$ratio = (float)($height / $width);
+		$res_width = $banner_width; // we want the image to be as wide as the banner...
+		$res_height = $banner_width * $ratio; // and keeping the proportions of the original image...
+		$h_resampled	=	imagecreatetruecolor($res_width, $res_height);
+		$src_y			=	($res_height - $banner_height) / 2;
+
+		// resize and copy opened file $himg2 to dummy image $h_resampled...
+		imagecopyresampled($h_resampled, $himg2, 0, 0, 0, 0, $res_width, $res_height, $width, $height);
 		
-		default:
-		break;
-	}
-	
-	// resize and copy opened file $himg2 to dummy image $h_resampled...
-	imagecopyresampled($h_resampled, $himg2, 0, 0, 0, 0, $res_width, $res_height, $width, $height);
-	
-	//	then, copy from $h_resampled to the banner image $h_banner_img
-	imagecopy($h_banner_img, $h_resampled, 0, 0, $x, $y, $banner_width, $banner_height);
-	
-	if ($mp_options[use_overlay]){
+		//	then, copy from $h_resampled to the banner image $h_banner_img
+		imagecopy($h_banner_img, $h_resampled, 0, 0, 0, $src_y, $banner_width, $banner_height);
+		
 		// finally, copy png over banner image...
 		imagecopy($h_banner_img, $h_banner_png, 0, 0, 0, 0, $banner_width, $banner_height);
-	}	
-	// now, prepare to save to $h_banner_img...
-	// once again, process according to file-type
-	switch($type){
-		case IMAGETYPE_GIF:
-			imagegif($h_banner_img, $thmb_file);
-		break;
-		
-		case IMAGETYPE_JPEG:
-			imagejpeg($h_banner_img, $thmb_file, 80);
-		break;
-		
-		case IMAGETYPE_PNG:
-			imagepng($h_banner_img, $thmb_file);
-		break;
-		
-		default:
-		break;
-	}
-	
-	// free up memory
-	imagedestroy($h_banner_img);	// image handle created by imagecreatetruecolor()
-	imagedestroy($h_resampled);		// image handle created by imagecreatetruecolor() for resampling/copying
-	imagedestroy($himg2);			// image handle created from uploaded image
 
-	if ($mp_options[use_overlay]){
+		// now, prepare to save $h_banner_img...
+		// once again, process according to file-type
+		if ($type == IMAGETYPE_JPEG) {
+			imagejpeg($h_banner_img, $thmb_file, 80); // eventually, there will be an option in Comic Settings to set JPG quality
+		} else {
+			call_user_func( 'image'.$types[$type], $h_banner_img, $thmb_file );
+		}
+		
+		// free up memory
+		imagedestroy($h_banner_img);	// image handle created by imagecreatetruecolor()
+		imagedestroy($h_resampled);		// image handle created by imagecreatetruecolor() for resampling/copying
+		imagedestroy($himg2);			// image handle created from uploaded image
 		imagedestroy($h_banner_png);	// image handle created for the alpha PNG overlay
-	}
-
-	$stat = stat( dirname( $thmb_file ));
-	$perms = $stat['mode'] & 0000666;
-	@ chmod( $thmb_file, $perms );
-
 	
-	return $thmb_file;
+		$stat = stat( dirname( $thmb_file ));
+		$perms = $stat['mode'] & 0000666;
+		@ chmod( $thmb_file, $perms );
+	
+		$url	= dirname( $file['url'] ).'/'.basename( $thmb_file );
+		$file	= $thmb_file;
+		$mime	= image_type_to_mime_type($type);
+		$banner = compact( explode(' ', 'file url mime banner_width banner_height') );
+		
+		return $banner;
+	}
 }
-/**		Manga+Press plugin Hook Functions
-		
-		These functions are used by add_action to run when
-		certain Wordpress functions are called.
-		
-		@since:		0.1b
-		@modified:	1.0 RC2
+#############################################################
+#		Manga+Press plugin Hook Functions					#
+#															#
+#		These functions are used by add_action to run when	#
+#		certain Wordpress functions are called.				#
+#															#
+#		@since:		0.1b									#
+#		@modified:	1.0 RC2									#
+#############################################################
 
-*/
 /*
 	add_navigation_css()
 	
@@ -587,7 +430,7 @@ function add_header_info() {
 	@modified:	1.0 RC2
 */
 function add_footer_info(){
-	echo "<br />Powered by <a href=\"http://www.dumpster-fairy.com/tag/mangapress\">Manga+Press</a> ".MP_VERSION;
+	echo "<br />Powered by <a href=\"http://manga-press.silent-shadow.net\">Manga+Press</a> ".MP_VERSION;
 }
 /*
 	add_meta_info()
@@ -597,7 +440,7 @@ function add_footer_info(){
 	@modified:	---
 */
 function add_meta_info(){
-	echo "<li><a href=\"http://www.dumpster-fairy.com/tag/mangapress\" title=\"Powered by Manga+Press ".MP_VERSION.", a revolutionary new web comic management system for Wordpress\">Manga+Press</a></li>";
+	echo "<li><a href=\"http://manga-press.silent-shadow.net\" title=\"Powered by Manga+Press ".MP_VERSION.", a revolutionary new web comic management system for Wordpress\">Manga+Press</a></li>";
 }
 /*
 	delete_comic()
