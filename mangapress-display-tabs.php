@@ -35,10 +35,4 @@ function theme_manager_page(){
 	
 	include("admin/page-theme-help.php");
 }
-function upgrade_mangapress() {
-	// TODO
-}
-function remove_mangapress() {
-	include("admin/page-uninstall.php");
-}
 ?>

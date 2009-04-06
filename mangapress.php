@@ -3,10 +3,11 @@
 Plugin Name: Manga+Press Comic Manager
 Plugin URI: http://manga-press.silent-shadow.net/
 Description: Turns Wordpress into a full-featured Webcomic Manager. Make sure to read both the "<a href="admin.php?page=webcomic_help">Manga+Press Help</a>" and "<a href="admin.php?page=theme-help">Template Tags</a>" sections understand how to configure and use the plugin with your own themes.
-Version: 2.0 beta
+Version: 1.0 RC2.5
 Author: Jessica Green
 Author URI: http://www.dumpster-fairy.com
-
+*/
+/*
 	(c) 2008 Jessica C Green
     
 	This program is free software: you can redistribute it and/or modify
@@ -22,6 +23,8 @@ Author URI: http://www.dumpster-fairy.com
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 	
+*/
+/*
 	Changelog
 	0.1b	-	initial launch
 	0.2b	-	10/14/08 Updated SQL queries to use $wpdb->prepare to help prevent SQL injection attacks.
@@ -35,10 +38,6 @@ Author URI: http://www.dumpster-fairy.com
 	1.0 RC2	-	Modified add_comic(), add_footer_info()
 	1.0 RC2.5 -	Found a major bug involving directory/file permissions. Has been corrected, but I'm keeping my
 				eye on this one for future reference. See website for a fix.
-	2.0 beta -	Major reworking of code in mangapress-classes.php and mangapress-fucntions.php
-				* Reworked code of add_comic() function so it is compatible with the Wordpress post db and Media Library
-				* removed create directory for series option
-				* added wp_sidebar_comic()
 	
 */
 global $wp_rewrite, $wpdb, $wp_version, $mp_options, $messages;
@@ -50,7 +49,7 @@ include_once("includes/mangapress-template-functions.php");
 include_once("mangapress-display-tabs.php");
 
 if (!defined('MP_VERSION')) {
-	define('MP_VERSION',	'2.0 beta');
+	define('MP_VERSION',	'1.0 RC2');
 }
 if (!defined('MP_DB_VERSION')) {
 	define('MP_DB_VERSION', '1.0');
@@ -68,17 +67,18 @@ $wpdb->mpcomicseries	= $wpdb->prefix . 'comics_series';
 $mp_options[latestcomic_cat]	=	get_option('comic_latest_default_category');
 $mp_options[latestcomic_page]	=	get_option('comic_latest_page');
 $mp_options[comic_archive_page]	=	get_option('comic_archive_page');
+$mp_options[comic_dir]			=	get_option('comic_default_dir');
 $mp_options[order_by]			=	get_option('comic_order_by');
-$mp_options[banner_overlay]		=	unserialize(get_option('comic_banner_overlay_image'));
+$mp_options[series_organize]	=	(int)get_option('series_organize');
+$mp_options[banner_overlay]		=	get_option('comic_banner_overlay_image');
 $mp_options[use_overlay]		=	(bool)get_option('comic_use_overlay');
 $mp_options[make_banner]		=	(bool)get_option('comic_make_banner');
 $mp_options[banner_width]		=	(int)get_option('banner_width');
 $mp_options[banner_height]		=	(int)get_option('banner_height');
-$mp_options[make_thumb]			=	(int)get_option('comic_make_thmb');
 $mp_options[nav_css]			=	get_option('comic_use_default_css');
-$mp_options[mp_ver]				=	get_option('comic_plugin_ver'); // needed for updates tab
 
 register_activation_hook( __FILE__, 'webcomicplugin_activate' );
+register_deactivation_hook( __FILE__ , 'webcomicplugin_deactivate' );
 
 add_action('admin_menu', 'web_init');
 add_action('delete_post', 'delete_comic');
@@ -92,41 +92,20 @@ add_action('wp_head', 'add_header_info');
 add_action('wp_footer', 'add_footer_info');
 add_action('wp_meta', 'add_meta_info');
 
-function web_init() {
-global $mp_options;
-
-	$main = add_menu_page	("Manga+Press Options",				"Manga+Press",		10,	MP_FOLDER,			'main_page', MP_URLPATH."/images/manga-press-icon.png");
-	add_submenu_page(MP_FOLDER,	"Manga+Press Options",	"Post Comic",		10,	'post_comic',		'upload_form');
-	add_submenu_page(MP_FOLDER,	"Manga+Press Options",	"Manage Series",	10,	'manage-series',	'manage_series');
-	$options = add_submenu_page(MP_FOLDER,	"Manga+Press Options",	"Comic Options",	10,	'comic-options',	'comic_options');
-	add_submenu_page(MP_FOLDER,	"Manga+Press Options",	"Theme Tags",		10,	'theme-tags',		'theme_manager_page');
-	$help = add_submenu_page(MP_FOLDER,	"Manga+Press Options",	"Manga+Press Help",	10, 'webcomic_help',	'display_help');
-	$uninstall = add_submenu_page(MP_FOLDER,	"Manga+Press Options",	"Uninstall",	10, 'uninstall',	'remove_mangapress');
-	if ( $mp_options[mp_ver] <> MP_VERSION ){
-		add_submenu_page(MP_FOLDER,	"Manga+Press Options",	"Upgrade",	10,	'upgrade', 'upgrade_mangapress');
-	}
-
-	add_action("admin_print_scripts-$main", 'manga_press_admin_header');
-	add_action("admin_print_scripts-$options", 'manga_press_admin_header');
-	add_action("admin_print_scripts-$help", 'manga_press_admin_header');
-	add_action("admin_print_scripts-$uninstall", 'manga_press_admin_header');
-}
-
 function webcomicplugin_activate(){
 global $mp_options, $wpdb;
 require_once(ABSPATH . 'wp-admin/upgrade-functions.php');
 
-	echo ' called ';
+
 	// add comic options to database
 	add_option('comic_latest_default_category',	'1',		'',	'yes');
 	add_option('comic_latest_page',				'',			'',	'yes');
 	add_option('comic_archive_page',			'',			'',	'yes');
+	add_option('comic_default_dir',				'uploads',	'',	'yes');
 	add_option('comic_plugin_ver',				MP_VERSION,		'',	'yes');
 	add_option('comic_order_by',				'ID',		'',	'yes');
+	add_option('series_organize',				'1',		'',	'yes');
 	add_option('comic_make_banner',				'0',		'',	'yes');
-	add_option('banner_width',					'0',		'',	'yes');
-	add_option('banner_height',					'0',		'',	'yes');	
-	add_option('comic_make_thmb',				'1',		'',	'yes');
 	add_option('comic_use_default_css',			'default_css',	'',	'yes');
 	add_option('comic_db_ver',					MP_DB_VERSION,	'',	'yes');
 	//
@@ -160,67 +139,69 @@ require_once(ABSPATH . 'wp-admin/upgrade-functions.php');
 	  	dbDelta($sql);
 	}
 }
-
-function mangapress_uninstall() {
+function webcomicplugin_deactivate (){
 global $mp_options, $wpdb;
+require_once(ABSPATH . 'wp-admin/upgrade-functions.php');
 
-	$msg = "Removing Manga+Press...<br />";
 	// delete comic options from database
 	delete_option('comic_latest_default_category');
 	delete_option('comic_latest_page');
 	delete_option('comic_archive_page');
+	delete_option('comic_default_dir');
 	delete_option('comic_order_by');
+	delete_option('series_organize');
 	delete_option('comic_banner_overlay_image');
 	delete_option('comic_use_overlay');
 	delete_option('comic_make_banner');
 	delete_option('banner_width');
 	delete_option('banner_height');
-	delete_option('comic_make_thmb');
 	delete_option('comic_use_default_css');
 	delete_option('comic_plugin_ver');
 	delete_option('comic_db_ver');
-	$msg .= "Manga+Press options have been removed...<br />";
 	//
 	//	remove comic tables
 	$sql = $wpdb->prepare( "DROP TABLE ". $wpdb->mpcomics . ";" );
 	$wpdb->query($sql);
-	$msg .=  "$wpdb->mpcomics has been removed.<br />";
 
 	$sql = $wpdb->prepare( "DROP TABLE ". $wpdb->mpcomicseries .";" );
-	$wpdb->query($sql);
-	$msg .=  "$wpdb->mpcomicseries has been removed.<br />";
-	
-	$msg .= "Be sure to remove all plugin files to complete the uninstall. ";
-	
-	return $msg;
-}
+  	$wpdb->query($sql);
 
+}
+function web_init() {
+global $mp_options;
+
+	add_menu_page	("Manga+Press Options",			"Manga+Press",		10,	MP_FOLDER,			"main_page");
+	add_submenu_page(MP_FOLDER,	"Manga+Press Options",	"Post Comic",		10,	'post_comic',		"upload_form");
+	add_submenu_page(MP_FOLDER,	"Manga+Press Options",	"Manage Series",	10,	'manage-series',	'manage_series');
+	add_submenu_page(MP_FOLDER,	"Manga+Press Options",	"Comic Options",	10,	'comic-options',	"comic_options");
+	add_submenu_page(MP_FOLDER,	"Manga+Press Options",	"Manga+Press Help",	10, 'webcomic_help',	"display_help");
+	add_submenu_page(MP_FOLDER,	"Manga+Press Options",	"Template Tags",	10,	'theme-help',	'theme_manager_page');
+
+	add_action("admin_print_scripts", 'manga_press_admin_header');
+
+}
 
 function manga_press_admin_header() {
 global $wp_version;
 
 	echo "\n<meta name=\"Manga+Press\" content=\"".MP_VERSION."\" />\n";
-	echo "<meta http-equiv=\"pragma\" content=\"no-cache\" />\n";
+	echo "\n<meta http-equiv=\"pragma\" content=\"no-cache\" />\n";
 	echo "<link rel=\"stylesheet\" href=\"".MP_URLPATH."css/mp.admin.css\" />\n";
 	
 	wp_enqueue_script('jquery-ui-core');
 	wp_enqueue_script('jquery-ui-tabs');
-	wp_enqueue_script('jquery-form');
 
 	wp_admin_css( 'css/dashboard' );
 
 }
 
-if ( !function_exists('debug') ) {
-					 
-	function debug($varb){
-	
-		echo "<pre>";
-		var_dump($varb);
-		echo "</pre><br />";
-	}
-	
+function debug($varb){
+
+	echo "<pre>";
+	var_dump($varb);
+	echo "</pre><br />";
 }
+
 function wp_comic_version() {
 	
 	echo MP_VERSION;	
