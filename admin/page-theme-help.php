@@ -18,9 +18,10 @@ if(preg_match('#' . basename(__FILE__) . '#', $_SERVER['PHP_SELF'])) { die('You 
   </li>
   <li><h3>Comic Template Tags</h3>
     <ul>
+      <li><span style="color: red;">*new*</span><strong> wp_sidebar_comic()</strong>: displays a thumbnail and a link back to the most recently uploaded comic.</li>
       <li><strong>get_comic_post($id)</strong>: works like the native Wordpress function <code>get_post()</code> except it retrieves a specific comic based on <code>$id</code>.</li>
-      <li style="color: red;"><strong>the_series()</strong>: is supposed to work like the Wordpress template tag <code>the_category()</code>. Is currently not functional in 1.0 RC1. Look for it in later releases.</li>
-      <li style="color: red;"><strong>get_comic_series($id)</strong>: retrieves the comic's series. Is currently not functional in 1.0 RC1. Look for it in later releases.</li>
+      <li style="color: red;"><strong>the_series()</strong>: is supposed to work like the Wordpress template tag <code>the_category()</code>. Is currently not functional in 2.0 beta. Look for it in later releases.</li>
+      <li style="color: red;"><strong>get_comic_series($id)</strong>: retrieves the comic's series. Is currently not functional in 2.0 beta. Look for it in later releases.</li>
       <li><strong>wp_comic_first</strong>(): returns the <code>$id</code> of the first posted comic.</li>
       <li><strong>wp_comic_last</strong>(): returns the <code>$id</code> of the last (most recent) posted comic.</li>
       <li><strong>wp_comic_navigation($post_id)</strong>: generates comic navigation if post is a comic.</li>

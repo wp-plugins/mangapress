@@ -2,8 +2,8 @@
 if(preg_match('#' . basename(__FILE__) . '#', $_SERVER['PHP_SELF'])) { die('You are not allowed to call this page directly.'); }
 ?>
 <?php
-if (count($_POST) != 0) { $status = update_options($_POST, $_FILES); }
-
+if (count($_POST) != 0 && $_POST[action] != 'uninstall_mangapress') { $status = update_options($_POST, $_FILES); }
+	
 $messages[0] = 'Options not updated.';
 $messages[1] = 'Options updated.';
 $messages[2] = 'Series not added.';
@@ -21,17 +21,29 @@ if (isset($status)) : ?>
 <div id="message" class="updated fade"><p><?php echo $messages[$status]; ?></p></div>
 <?php unset($status); ?>
 <?php endif; ?>
+
 <script type="text/javascript">
 	jQuery(function() {
 		jQuery('#mp_back > h2 > ul').tabs();
+		// enable banner options...
+		jQuery('#make_banner').change(function(){
+			var isDisabled = !jQuery('#use_overlay_image').attr('disabled');
+			
+			jQuery('#use_overlay_image').attr('disabled', isDisabled);
+		});
+		jQuery('#use_overlay_image').change(function(){
+			var isDisabled = !jQuery('#overlay_image').attr('disabled');
+
+			jQuery('#overlay_image').attr('disabled', isDisabled);
+		});
 	});
+	
 </script>
 <div id="mp_back" class="wrap">
     <h2>Manga+Press Options
         <ul id="tabs" class="ui-tabs-nav">
             <li><a href="#basic_options">Basic Options</a></li>
-            <li><a href="#comic_dir">Set Comic Directory</a></li>
-            <li><a href="#image_options">Banner Options</a></li>
+            <li><a href="#image_options">Image Options</a></li>
             <li><a href="#image_dimensions">Banner Dimensions</a></li>
         </ul>
     </h2>   
@@ -62,7 +74,7 @@ if (isset($status)) : ?>
         ul.comic-nav  { margin: 0; padding: 0; white-space: nowrap; }
         ul.comic-nav li { display: inline;	list-style-type: none; }
         ul.comic-nav a { text-decoration: none; padding: 3px 10px; }
-        ul.comic-nav a:link, .mycomic_navigation a:visited { color: #ccc;	text-decoration: none; }
+        ul.comic-nav a:link, ul.comic-nav a:visited { color: #ccc;	text-decoration: none; }
         ul.comic-nav a:hover { text-decoration: none; }
         ul.comic-nav li:before{ content: ""; }
         </textarea>
@@ -167,48 +179,26 @@ if (isset($status)) : ?>
         </form>
     </div>
 
-    <div id="comic_dir" class="ui-tabs-panel ui-tabs-hide">
-        <form action="<?=$_SERVER['REQUEST_URI']?>" method="POST" id="comic_dir_form">
-        <fieldset class="options">
-        <legend><h3>Set Comic Directory</h3></legend>
-        <p>New directories can be created through FTP, and <strong>must</strong> be inside your <code>wp-content</code> folder. </p>
-        <p class="submit"><input type="submit" value="Set Comic Directory Options &raquo;" /></p>
-        <table class="form-table">
-            <input type="hidden" name="action" value="set_dir" />
-            <tr>
-                <th>Current Directory:</th><td>/<?=$mp_options[comic_dir]?></td>
-           </tr>
-           <tr>
-                <th>New Directory:</th><td><input type="text" size="35" name="new_dir" />(no leading slashes) leave blank if you don't wish to change the default directory</td>
-            </tr>
-            <tr>
-                <?
-                    $ischecked	=	($mp_options[series_organize] == 1) ? 'checked="checked" ' : '';
-                ?>
-                <td colspan="2" align="center"><label for="organize_by_series"><input type="checkbox" name="organize_by_series" id="organize_by_series" value="1" <?=$ischecked;?>/>
-                Organize comics into series-based folders</label></td> 
-            </tr>
-        </table>
-        </fieldset>
-        </form>
-    </div>
-    <? if (function_exists('gd_info')) { ?>
+<?php if (function_exists('gd_info')) : ?>
+    
     <div id="image_options" class="ui-tabs-panel ui-tabs-hide">
-        <form enctype="multipart/form-data" action="<?=$_SERVER['../REQUEST_URI']?>" method="post" id="image_options_form">
+        <form enctype="multipart/form-data" action="<?=$_SERVER['REQUEST_URI']?>" method="post" id="image_options_form">
         <fieldset class="options" >
         <legend>
-        <h3>Banner Options</h3></legend>
+        <h3>Image Options</h3></legend>
         <p>GD Library must be enabled to use the banner creation options. If an overlay image is uploaded, the overlay image will determine the size of the banner. Banner Skin must be a 24bit Alpha transparency PNG. </p>
-        <p class="submit"><input type="submit" value="Set Banner Options &raquo;" /></p>
+        <p class="submit"><input type="submit" value="Set Image Options &raquo;" /></p>
           <table class="form-table">
             <input type="hidden" name="action" value="set_image_options" />
             <input type="hidden" name="MAX_FILE_SIZE" value="150000" />
           <?
-            //$isdisabled = ($mp_options[make_banner] == 0) ? 'disabled="disabled" ' : '';
-            //$isdisabled	= ($mp_options[use_overlay] == 1) ? 'disabled="disabled" ' : '';
             if (!$mp_options[make_banner]){ $hasoptions = 'disabled="disabled" '; }
             if (!$mp_options[make_banner]) { $dimensions = 'disabled="disabled" '; }
           ?>
+          	<tr>
+            	<th colspan="2" class="th-full"><label for="make_thumb"><input type="checkbox" name="make_thumb" id="make_thumb" value="1" <?=($mp_options[make_thumb] == 1) ? 'checked="checked" ' : ''; ?> />
+                Generate Thumbnail for Comic Page (thumbnail size can be set in <a href="options-media.php">Wordpress Settings &gt; Media</a>)</label></th>
+            </tr>
             <tr>
               <th colspan="2" class="th-full"><label for="make_banner"><input type="checkbox" name="make_banner" id="make_banner" value="1" <?=($mp_options[make_banner] == 1) ? 'checked="checked" ' : '';?>/>
               Create Banner.</label></th>
@@ -219,18 +209,18 @@ if (isset($status)) : ?>
             </tr>
             <tr>
               <th>Current Banner Skin:</th>
-              <td>
+              <td id="bannerstate">
         <? 
             if ($mp_options[use_overlay]) {
-                echo empty($mp_options[banner_overlay]) ? 'No banner skin image specified. Please upload an image.' : '<img src="'.$mp_options[banner_overlay].'" />';
+                echo empty($mp_options[banner_overlay]) ? 'No banner skin image specified. Please upload an image.' : '<img src="'.$mp_options[banner_overlay][url].'" />';
             } else {
-                echo "Banner skin are disabled.";
+                echo "Banner skins are disabled.";
             }
         ?>	 </td>
             </tr>
             <tr>
               <th>Upload Banner Skin:</th>
-              <td><input name="overlay_image" id="overlay_image" type="file" <?=$hasoptions?>/></td>
+              <td><input name="overlay_image" id="overlay_image" type="file" <?=($mp_options[use_overlay] == 1) ? '' : 'disabled="disabled" ';?>/></td>
             </tr>
           </table>
         </fieldset>
@@ -242,18 +232,18 @@ if (isset($status)) : ?>
         <fieldset class="options">
         <legend><h3>Set Banner Width and Height</h3></legend>
         <p>This section is used only when a banner skin has not been specified.</p>
-        <p class="submit"><input type="submit" value="Set Banner Dimensions &raquo;" <?=$dimensions?>/></p>
+        <p class="submit"><input type="submit" value="Set Banner Dimensions &raquo;" <?=($mp_options[use_overlay] == 1) ? 'disabled="disabled" ' : '';?>/></p>
           <table class="form-table">
           <input type="hidden" name="action" value="set_image_dimensions" />
             <tr>
-                <th>Banner Width:</th><td><input type="text" size="6" name="banner_width" value="<?=$mp_options[banner_width]?>" <?=$dimensions?>/></td>
+                <th>Banner Width:</th><td><input type="text" size="6" name="banner_width" value="<?=$mp_options[banner_width]?>" <?=($mp_options[use_overlay] == 1) ? 'disabled="disabled" ' : '';?>/></td>
             </tr>
             <tr>
-                <th>Banner Height:</th><td><input type="text" size="6" name="banner_height" value="<?=$mp_options[banner_height]?>" <?=$dimensions?>/></td>
+                <th>Banner Height:</th><td><input type="text" size="6" name="banner_height" value="<?=$mp_options[banner_height]?>" <?=($mp_options[use_overlay] == 1) ? 'disabled="disabled" ' : '';?>/></td>
             </tr>
           </table>
          </fieldset>
         </form>
     </div>
-    <? } ?>
+<?php endif; ?>
 </div>

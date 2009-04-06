@@ -3,7 +3,7 @@
 	A very simple Wordpress Post class for simplifying
 	the posting of comics. Used by add_comic()
 */
-class comic_post {
+class WP_ComicPost {
     var $post_title;
     var $post_content;
     var $post_status;
@@ -17,8 +17,38 @@ class comic_post {
     var $comment_status; /* open or closed for commenting (optional) */
 	var $post_category;
 	var $post_excerpt;
-}
+	
+	function WP_ComicPost($_post, $file, $banner = NULL, $_post_type = 'post') {
+		global $mp_options, $userdata;
 
+		get_currentuserinfo(); // needed to retrieve ID of currently logged in user
+		
+
+		$this->post_title		= $_post[title];
+		$this->post_content		= ($_post_type == 'post') ? $this->get_comicpage_html($file) : "Attachment for ".$_post[title];
+		$this->post_excerpt		= ($_post_type == 'post') ? $this->get_comicpage_html($banner, true) : '';
+		$this->post_status		= 'publish';
+		$this->post_type		= ($_post_type == 'post') ? 'post' : 'attachment';
+		$this->post_mime_type	= ($_post_type == 'post') ? '' : $file['type'];
+		$this->post_category	= $_post[categories];
+		$this->post_author		= $userdata->ID;
+		$this->guid				= ($_post_type == 'post') ? '' : $file['url'];
+		$this->post_date		= current_time('mysql');
+		$this->post_date_gmt	= current_time('mysql', 1);
+
+	}
+	
+	private function get_comicpage_html($image, $excerpt = false) {
+		
+		list($width, $height, $type, $attr)	=	getimagesize($image['file']);
+		
+		$excerpt ? $classes = 'comic-banner' : $classes = 'comic-page';
+		$html = '<img src="'.$image['url'].'" '.$attr.' class="aligncenter size-full '.$classes.'" alt="[image]" />';
+		
+		return $html;
+		
+	}
+}
 /**
  * WordPress PHP class to check for a new version.
  * @author Alex Rabe & Joern Kretzschmar

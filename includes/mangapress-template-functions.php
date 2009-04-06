@@ -105,6 +105,48 @@ global $cat, $mp_options;
 	return  (bool)($id == $mp_options[latestcomic_cat]);
 }
 /** 
+* get_comic_post()
+*
+*
+* @since:		1.0 RC1
+* @modified:	2.0 beta
+**/
+function get_comic_post($id) {
+global $comic_page, $post_date, $post_content, $post_title, $post_excerpt;
+
+	$comic_page = get_post($id, OBJECT);
+
+	extract ( get_object_vars( $comic_page ) );
+
+	return get_object_vars( $comic_page );
+}
+/** 
+* the_comic()
+*
+* Custom template tag
+*
+* @since:		1.0 RC1
+* @modified:	2.0 beta
+**/
+function the_comic(){
+	global $post_content;
+	
+	echo $post_content;
+}
+/** 
+* the_banner()
+*
+* Custom template tag
+*
+* @since:		2.0 beta
+* @modified:	--- 
+**/
+function the_banner() {
+	global $post_excerpt;
+	
+	echo $post_excerpt;
+}
+/** 
 * the_series()
 *
 * Custom template tag
@@ -113,25 +155,6 @@ global $cat, $mp_options;
 * @modified:	--- 
 **/
 function the_series() { }
-/** 
-* get_comic_post()
-*
-*
-* @since:		1.0 RC1
-* @modified:	---
-**/
-function get_comic_post($id) {
-global $comic_page, $post_date, $post_content, $post_title, $post_excerpt;
-
-	$comic_page = get_post($id, ARRAY_A);
-
-	extract ( $comic_page );
-	//debug ( $comic_page );
-	setup_postdata ($comic_page);
-	rewind_posts();
-	
-	return $comic_page;
-}
 /** 
 * get_comic_series()
 *
@@ -351,5 +374,22 @@ function wp_comic_archive_page_id() {
 global $mp_options;
 
 	return $mp_options[comic_archive_page];
+}
+/**
+ * wp_sidebar_comic()
+ *
+ * displays a recent comic thumbnail in the sidebar
+*/
+function wp_sidebar_comic() {
+	
+	$ID = wp_comic_last();
+	$images =& get_children( 'post_type=attachment&post_mime_type=image&post_parent=' . $ID );
+	foreach( $images as $imageID => $imagePost )
+		$image = wp_get_attachment_metadata( $imageID );
+		$imgurl = wp_get_attachment_thumb_url( $imagePost->ID );
+		$res = getimagesize( $imgurl );
+		echo '<div class="comic-sidebar"><a href="'.get_permalink( $ID ).'" title="Latest Comic"><img src="'.$imgurl.'"'.$res[3].' style="border: none; " /></a></div>';
+		echo '<div class="comic-sidebar-link"><a href="'.get_permalink( $ID ).'" title="Latest Comic">Latest Comic</a></div>';
+		
 }
 ?>

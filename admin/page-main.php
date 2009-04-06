@@ -27,7 +27,7 @@
   
   <div id="dashboard-widgets-wrap">
     <div id="dashboard-widgets">
-      <div id="post-body" class="has-sidebar">
+      <div id="post-body">
         <h3 class="dashboard-widget-title">
           <?php _e('Latest News') ?>
         </h3>
@@ -35,7 +35,7 @@
 			<?php
 				if (!defined('MAGPIE_CACHE_ON') ) { define('MAGPIE_CACHE_ON', 0); } // 2.7 Cache Bug 
 
-				$rss = @fetch_rss('http://www.dumpster-fairy.com/?tag=mangapress&feed=rss2');
+				$rss = @fetch_rss('http://manga-press.silent-shadow.net/i/updates/feed/');
 				
 				if ( isset($rss->items) && 0 != count($rss->items) ) {
 					$rss->items = array_slice($rss->items, 0, 4);
@@ -52,6 +52,7 @@
           <?php } ?>
         </div>
       </div>
+      <br class="clear" />
     </div>
     <div id="side-info-column" class="inner-sidebar">
       <h3 class="dashboard-widget-title">Installed Libraries:</h3>
