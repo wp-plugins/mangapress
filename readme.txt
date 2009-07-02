@@ -3,8 +3,8 @@ Contributors: Jessica Green
 Donate link: http://manga-press.silent-shadow.net/
 Tags: webcomics, online comics
 Requires at least: 2.7.1
-Tested up to: 2.7.1
-Stable tag: 2.0
+Tested up to: 2.8
+Stable tag: 2.0.1
 
 Manga+Press is a webcomic managment system for Wordpress.
 

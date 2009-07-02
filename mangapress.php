@@ -3,11 +3,11 @@
 Plugin Name: Manga+Press Comic Manager
 Plugin URI: http://manga-press.silent-shadow.net/
 Description: Turns Wordpress into a full-featured Webcomic Manager. Make sure to read both the "<a href="admin.php?page=webcomic_help">Manga+Press Help</a>" and "<a href="admin.php?page=theme-help">Template Tags</a>" sections understand how to configure and use the plugin with your own themes.
-Version: 2.0 beta
+Version: 2.0.1 beta
 Author: Jessica Green
 Author URI: http://www.dumpster-fairy.com
 
-	(c) 2008 Jessica C Green
+	(c) 2008, 2009 Jessica C Green
     
 	This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -35,10 +35,13 @@ Author URI: http://www.dumpster-fairy.com
 	1.0 RC2	-	Modified add_comic(), add_footer_info()
 	1.0 RC2.5 -	Found a major bug involving directory/file permissions. Has been corrected, but I'm keeping my
 				eye on this one for future reference. See website for a fix.
-	2.0 beta -	Major reworking of code in mangapress-classes.php and mangapress-fucntions.php
+	2.0beta  -	Major reworking of code in mangapress-classes.php and mangapress-fucntions.php
 				* Reworked code of add_comic() function so it is compatible with the Wordpress post db and Media Library
 				* removed create directory for series option
 				* added wp_sidebar_comic()
+	2.0.1beta -	Corrected a minor bug in update_options. Banner skin wouldn't be uploaded even if "use banner skin" option
+				were checked and user had selected an image for upload. Also corrected a jQuery UI Tabs bug in the user admin
+				area that is present when Manga+Press is used with Wordpress 2.8
 	
 */
 global $wp_rewrite, $wpdb, $wp_version, $mp_options, $messages;
@@ -50,7 +53,7 @@ include_once("includes/mangapress-template-functions.php");
 include_once("mangapress-display-tabs.php");
 
 if (!defined('MP_VERSION')) {
-	define('MP_VERSION',	'2.0 beta');
+	define('MP_VERSION',	'2.0.1 beta');
 }
 if (!defined('MP_DB_VERSION')) {
 	define('MP_DB_VERSION', '1.0');
@@ -95,7 +98,7 @@ add_action('wp_meta', 'add_meta_info');
 function web_init() {
 global $mp_options;
 
-	$main = add_menu_page	("Manga+Press Options",				"Manga+Press",		10,	MP_FOLDER,			'main_page', MP_URLPATH."/images/manga-press-icon.png");
+	$main = add_menu_page	("Manga+Press Options",	"Manga+Press",	10,	MP_FOLDER,	'main_page', MP_URLPATH."/images/manga-press-icon.png");
 	add_submenu_page(MP_FOLDER,	"Manga+Press Options",	"Post Comic",		10,	'post_comic',		'upload_form');
 	add_submenu_page(MP_FOLDER,	"Manga+Press Options",	"Manage Series",	10,	'manage-series',	'manage_series');
 	$options = add_submenu_page(MP_FOLDER,	"Manga+Press Options",	"Comic Options",	10,	'comic-options',	'comic_options');
@@ -106,10 +109,10 @@ global $mp_options;
 		add_submenu_page(MP_FOLDER,	"Manga+Press Options",	"Upgrade",	10,	'upgrade', 'upgrade_mangapress');
 	}
 
-	add_action("admin_print_scripts-$main", 'manga_press_admin_header');
-	add_action("admin_print_scripts-$options", 'manga_press_admin_header');
-	add_action("admin_print_scripts-$help", 'manga_press_admin_header');
-	add_action("admin_print_scripts-$uninstall", 'manga_press_admin_header');
+	add_action("admin_print_scripts-$main",			'manga_press_admin_header');
+	add_action("admin_print_scripts-$options",		'manga_press_admin_header');
+	add_action("admin_print_scripts-$help",			'manga_press_admin_header');
+	add_action("admin_print_scripts-$uninstall",	'manga_press_admin_header');
 }
 
 function webcomicplugin_activate(){
@@ -137,7 +140,7 @@ require_once(ABSPATH . 'wp-admin/upgrade-functions.php');
 		update_option('comic_plugin_ver', MP_VERSION);
 	}
 	
-	if(($wpdb->get_var("show tables like '{".$wpdb->mpcomics."}'") != $wpdb->mpcomics) || $newversion) {
+	if(($wpdb->get_var("show tables like '{".$wpdb->mpcomics."}'") != $wpdb->mpcomics) && $newversion) {
 
 		$sql = $wpdb->prepare("CREATE TABLE ". $wpdb->mpcomics ." (
 				`id` bigint(20) unsigned NOT NULL auto_increment,
@@ -149,7 +152,7 @@ require_once(ABSPATH . 'wp-admin/upgrade-functions.php');
 	  	dbDelta($sql);
 	}
 
-	if(($wpdb->get_var("show tables like '{".$wpdb->mpcomicseries."}'") != $wpdb->mpcomicseries) || $newversion) {
+	if(($wpdb->get_var("show tables like '{".$wpdb->mpcomicseries."}'") != $wpdb->mpcomicseries) && $newversion) {
 
 		$sql = $wpdb->prepare("CREATE TABLE ". $wpdb->mpcomicseries ." (
 				`series_id` bigint(20) NOT NULL AUTO_INCREMENT,
