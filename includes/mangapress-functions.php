@@ -3,7 +3,7 @@
 		This is where the actual work gets done...
 		
 		@since:		0.1b
-		@modified:	2.0 beta
+		@modified:	2.0.1 beta
 
 */
 /*
@@ -12,7 +12,8 @@
 	returns true or a number based on error
 	@Used by:	page-comic-options.php
 	@since:		0.1b
-	@modified:	2.0 beta
+	@modified:	2.0.1 beta
+	
 */
 function update_options($options, $file = ''){
 global $mp_options;
@@ -39,7 +40,7 @@ global $mp_options;
 		case 'set_image_options':
 		
 			$status = 1;
-			if ($mp_options[use_overlay]) {
+			if ($mp_options[use_overlay] || $options[use_overlay]) {
 
 				if ($file[overlay_image][name] != '') {
 					$status	=	upload_overlay_image($file);

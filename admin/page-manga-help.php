@@ -2,20 +2,25 @@
 if(preg_match('#' . basename(__FILE__) . '#', $_SERVER['PHP_SELF'])) { die('You are not allowed to call this page directly.'); }
 ?>
 <script type="text/javascript">
+	/* <![CDATA[ */
 	jQuery(function() {
-		jQuery('ul.ui-tabs-nav').tabs();
+		jQuery(document).ready(function(){
+			jQuery('#mp_back').tabs({ fxFade: true, fxSpeed: 'fast' });
+		});
 	});
+	/* ]]> */
 </script>
 
-<div class="wrap">
-  <h2>Manga+Press Help
+<div id="mp_back" class="wrap">
+  <h2>Manga+Press Help</h2>
+
     <ul id="tabs" class="ui-tabs-nav">
       <li><a href="#getting-started">Getting Started</a></li>
       <li><a href="#post-comic">How to: Post a Comic</a></li>
       <li><a href="#comic-options">Explained: Comic Options</a></li>
       <li><a href="#comic-banners">How to: Use Comic Banners</a></li>
     </ul>
-  </h2>
+    
   <h4>How-to-use guide to using the Manga+Press plugin for Wordpress.</h4>
   <div id="getting-started" class="ui-tabs-panel">
     <fieldset class="options">

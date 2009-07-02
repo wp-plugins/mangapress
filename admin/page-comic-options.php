@@ -23,8 +23,12 @@ if (isset($status)) : ?>
 <?php endif; ?>
 
 <script type="text/javascript">
+	/* <![CDATA[ */
 	jQuery(function() {
-		jQuery('#mp_back > h2 > ul').tabs();
+		jQuery(document).ready(function(){
+			jQuery('#mp_back').tabs({ fxFade: true, fxSpeed: 'fast' });
+		});
+		
 		// enable banner options...
 		jQuery('#make_banner').change(function(){
 			var isDisabled = !jQuery('#use_overlay_image').attr('disabled');
@@ -37,16 +41,16 @@ if (isset($status)) : ?>
 			jQuery('#overlay_image').attr('disabled', isDisabled);
 		});
 	});
-	
+	/* ]]> */
 </script>
 <div id="mp_back" class="wrap">
-    <h2>Manga+Press Options
-        <ul id="tabs" class="ui-tabs-nav">
-            <li><a href="#basic_options">Basic Options</a></li>
-            <li><a href="#image_options">Image Options</a></li>
-            <li><a href="#image_dimensions">Banner Dimensions</a></li>
-        </ul>
-    </h2>   
+    <h2>Manga+Press Options</h2>   
+
+    <ul id="tabs" class="ui-tabs-nav">
+        <li><a href="#basic_options">Basic Options</a></li>
+        <li><a href="#image_options">Image Options</a></li>
+        <li><a href="#image_dimensions">Banner Dimensions</a></li>
+    </ul>
     <div id="basic_options" class="ui-tabs-panel">
         <form action="<?=$_SERVER['REQUEST_URI']?>" method="POST" id="basic_options_form">
         <fieldset class="options">
