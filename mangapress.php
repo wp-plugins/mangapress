@@ -140,7 +140,7 @@ require_once(ABSPATH . 'wp-admin/upgrade-functions.php');
 		update_option('comic_plugin_ver', MP_VERSION);
 	}
 	
-	if(($wpdb->get_var("show tables like '{".$wpdb->mpcomics."}'") != $wpdb->mpcomics) && $newversion) {
+	if(($wpdb->get_var("show tables like '{".$wpdb->mpcomics."}'") != $wpdb->mpcomics) || $newversion) {
 
 		$sql = $wpdb->prepare("CREATE TABLE ". $wpdb->mpcomics ." (
 				`id` bigint(20) unsigned NOT NULL auto_increment,
@@ -148,18 +148,18 @@ require_once(ABSPATH . 'wp-admin/upgrade-functions.php');
 				`post_date` datetime NOT NULL,
 				PRIMARY KEY  (`id`),
 				UNIQUE KEY `post_id` (`post_id`)
-				) ENGINE=MyISAM DEFAULT CHARSET=utf8;");
+				) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
 	  	dbDelta($sql);
 	}
 
-	if(($wpdb->get_var("show tables like '{".$wpdb->mpcomicseries."}'") != $wpdb->mpcomicseries) && $newversion) {
+	if(($wpdb->get_var("show tables like '{".$wpdb->mpcomicseries."}'") != $wpdb->mpcomicseries) || $newversion) {
 
 		$sql = $wpdb->prepare("CREATE TABLE ". $wpdb->mpcomicseries ." (
 				`series_id` bigint(20) NOT NULL AUTO_INCREMENT,
 				`term_id` bigint(20) NOT NULL,
 				PRIMARY KEY (`series_id`),
 				UNIQUE KEY `term_id` (`term_id`)
-				) ENGINE=MyISAM  DEFAULT CHARSET=utf8;");
+				) ENGINE=InnoDB  DEFAULT CHARSET=utf8;");
 	  	dbDelta($sql);
 	}
 }
