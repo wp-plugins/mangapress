@@ -124,7 +124,7 @@ if ($mp_options[nav_css] == 'default_css') { add_action('wp_head', 'add_navigati
 add_action('wp_head',	'add_header_info');
 add_action('wp_footer', 'add_footer_info');
 add_action('wp_meta',	'add_meta_info');
-add_action('pre_get_posts', 'filter_posts_frontpage');
+add_action('wp', 'filter_posts_frontpage');
 add_action('the_post', 'filter_latest_comicpage');
 if ($mp_options[twc_code_insert]){ add_action('loop_start', 'comic_insert_twc_update_code'); }
 if ($mp_options[oc_code_insert]){ add_filter('the_content', 'comic_insert_oc_update_code'); }
