@@ -10,7 +10,18 @@ Manga+Press is a webcomic managment system for Wordpress.
 
 == Description ==
 
-Manga+Press is a webcomic managment system for Wordpress. Manga+Press uses Wordpress's posts, pages and categories to help you keep track of your comic posts. Manga+Press also includes its own custom template tags to help make creating themes easier.
+Manga+Press is a webcomic managment system for Wordpress. Manga+Press uses Wordpress's posts, pages and categories to help you keep track of your comic posts. Manga+Press also includes its own custom template tags to help make creating themes easier. Version 2.5 contains some new features listed here:
+    * Automatic Options:
+          o You now have the option to automatically exclude the comic category from the front page.
+          o You can now automatically have the comic navigation code inserted into the comic posts and comic page.
+          o Comic banner can now be automatically inserted into the front page.
+          o All of this can be done by enabling certain options in Manga+Press. No editing of Wordpress themes are necessary!
+    * Comic Update Codes:
+          o New options to insert both TheWebcomicList.com "Last Update: " and OnlineComics.net "PageScan"-codes.
+          o Banner images are no longer generated. The front page banner now uses TimThumb to generate a cached image from the comic according to dimensions specified in Image Options.
+    * Posting New Comics:
+          o For greater control, you now have the option of using either Wordpress's Add New page or the Manga+Press Post Comic page. When using the Add New page, Manga+Press checks which categories the post is being assigned to and then automatically adds the post to the comic database and the required post meta if the assigned categories match the comic category specified in Comic Options.
+          o Changes have been made to the Post Comic page. Categories are now listed as checkboxes instead of a dropdown, and an optional excerpt can be added.
 
 == Installation ==
 
@@ -44,9 +55,9 @@ Found a bug? Or did you find a bug and figure out a fix? Visit http://manga-pres
 
 For updates, you can visit http://manga-press.silent-shadow.net/
 
-The Manga+Press Theme makes use of FamFamFam's Silk Icon set: http://www.famfamfam.com/lab/icons/silk/
-
 The code for the comic navigation is based on the MyComic Wordpress plugin found at http://borkweb.com/story/wordpress-plugin-mycomic-browser
+
+Manga+Press also makes use of TimThumb, created by Tim McDaniels and Darren Hoyt with tweaks by Ben Gillbanks http://code.google.com/p/timthumb/
 
 This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
 
