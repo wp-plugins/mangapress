@@ -11,35 +11,52 @@ Manga+Press is a webcomic managment system for Wordpress.
 == Description ==
 
 Manga+Press is a webcomic managment system for Wordpress. Manga+Press uses Wordpress's posts, pages and categories to help you keep track of your comic posts. Manga+Press also includes its own custom template tags to help make creating themes easier. Version 2.5 contains some new features listed here:
+
 * Automatic Options:
-	* You now have the option to automatically exclude the comic category from the front page.
-	* You can now automatically have the comic navigation code inserted into the comic posts and comic page.
-	* Comic banner can now be automatically inserted into the front page.
-	* All of this can be done by enabling certain options in Manga+Press. No editing of Wordpress themes are necessary!
+
+1. You now have the option to automatically exclude the comic category from the front page.
+
+2. You can now automatically have the comic navigation code inserted into the comic posts and comic page.
+
+3. Comic banner can now be automatically inserted into the front page.
+
+4. All of this can be done by enabling certain options in Manga+Press. No editing of Wordpress themes are necessary!
+
+
 * Comic Update Codes:
-	* New options to insert both TheWebcomicList.com "Last Update: " and OnlineComics.net "PageScan"-codes.
-	* Banner images are no longer generated. The front page banner now uses TimThumb to generate a cached image from the comic according to dimensions specified in Image Options.
+
+1. New options to insert both TheWebcomicList.com "Last Update: " and OnlineComics.net "PageScan"-codes.
+
+2. Banner images are no longer generated. The front page banner now uses TimThumb to generate a cached image from the comic according to dimensions specified in Image Options.
+
 * Posting New Comics:
-	* For greater control, you now have the option of using either Wordpress's Add New page or the Manga+Press Post Comic page. When using the Add New page, Manga+Press checks which categories the post is being assigned to and then automatically adds the post to the comic database and the required post meta if the assigned categories match the comic category specified in Comic Options.
-	* Changes have been made to the Post Comic page. Categories are now listed as checkboxes instead of a dropdown, and an optional excerpt can be added.
+
+1. For greater control, you now have the option of using either Wordpress's Add New page or the Manga+Press Post Comic page. When using the Add New page, Manga+Press checks which categories the post is being assigned to and then automatically adds the post to the comic database and the required post meta if the assigned categories match the comic category specified in Comic Options.
+
+2. Changes have been made to the Post Comic page. Categories are now listed as checkboxes instead of a dropdown, and an optional excerpt can be added.
 
 == Changelog ==
 
 == 1.0 ==
-1.0 RC1		General maintenance, fixing up look-and-feel of admin side. Putting together companion theme.
-1.0 RC2		Modified add_comic(), add_footer_info()
-1.0 RC2.5	Found a major bug involving directory/file permissions. Has been corrected, but I'm keeping my eye on this one for future reference. See website for a fix.
+* 1.0 RC1		General maintenance, fixing up look-and-feel of admin side. Putting together companion theme.
+
+* 1.0 RC2		Modified add_comic(), add_footer_info()
+
+* 1.0 RC2.5	Found a major bug involving directory/file permissions. Has been corrected, but I'm keeping my eye on this one for future reference. See website for a fix.
 
 == 2.0 ==
-2.0beta		Major reworking of code in mangapress-classes.php and mangapress-fucntions.php
-* Reworked code of add_comic() function so it is compatible with the Wordpress post db and Media Library
-* removed create directory for series option
-* added wp_sidebar_comic()
+* 2.0beta		Major reworking of code in mangapress-classes.php and mangapress-fucntions.php
 
-2.0.1beta	Corrected a minor bug in update_options. Banner skin wouldn't be uploaded even if "use banner skin" option were checked and user had selected an image for upload. Also corrected a jQuery UI Tabs bug in the user admin area that is present when Manga+Press is used with Wordpress 2.8
+1. Reworked code of add_comic() function so it is compatible with the Wordpress post db and Media Library
+
+2. removed create directory for series option
+
+3. added wp_sidebar_comic()
+
+* 2.0.1beta	Corrected a minor bug in update_options. Banner skin wouldn't be uploaded even if "use banner skin" option were checked and user had selected an image for upload. Also corrected a jQuery UI Tabs bug in the user admin area that is present when Manga+Press is used with Wordpress 2.8
 
 == 2.5 ==
-2.1/2.5		2.1 renamed to 2.5. Eliminated the banner skin option and all functions attached. Feature can be duplicated with a little CSS positioning. Option for creating a banner from uploaded comic or uploading a seperate banner still remains, as well as the option to set banner width & height. Removed both the Manga+Press help and Template Tag pages. Will be hosted in a help wiki on the Manga+Press website. Made changes to the Post Comic page. Also reworded the "New Version" text. Created options to have the comic banner & navigation included at the top of The Loop on the home page, as well automatically filtering comic categories from the front page and automatically modifying The Loop for the latest comic page. Removed the make banner option.
+* 2.1/2.5		2.1 renamed to 2.5. Eliminated the banner skin option and all functions attached. Feature can be duplicated with a little CSS positioning. Option for creating a banner from uploaded comic or uploading a seperate banner still remains, as well as the option to set banner width & height. Removed both the Manga+Press help and Template Tag pages. Will be hosted in a help wiki on the Manga+Press website. Made changes to the Post Comic page. Also reworded the "New Version" text. Created options to have the comic banner & navigation included at the top of The Loop on the home page, as well automatically filtering comic categories from the front page and automatically modifying The Loop for the latest comic page. Removed the make banner option.
 
 == Installation ==
 
