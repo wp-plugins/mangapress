@@ -1,8 +1,15 @@
 <?
-/*--------- Display Option Tabs section -------
-	Some plugin writers prefer to use echo statements to output the code for their options tab,
-	I prefer to create seperate files and use include statements. Is much neater that way!
-*/
+/**
+ * Display Option Tabs section
+ * Some plugin writers prefer to use echo statements to output the code for their options tab,
+ * I prefer to create seperate files and use include statements. Is much neater that way!
+ *
+ * @package Manga_Press
+ * @subpackage Display_Option_Tabs
+ * @since 0.5
+ *
+ */
+ 
 // displays the upload form for the Post Comic tab
 function main_page() {
 global $mp_options;
@@ -21,23 +28,17 @@ global $mp_options;
 	include("admin/page-comic-options.php");
 
 }
-// displays the help page, which is located in the Plugins tab
-function display_help(){
-	include("admin/page-manga-help.php");
-}
 
-function manage_series(){
+function series_list(){
 global $mp_options;
 
 	include("admin/page-manage-series.php");
 }
-function theme_manager_page(){
-	
-	include("admin/page-theme-help.php");
-}
+
 function upgrade_mangapress() {
-	// TODO
+	include("admin/page-upgrade.php");
 }
+
 function remove_mangapress() {
 	include("admin/page-uninstall.php");
 }

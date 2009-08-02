@@ -2,9 +2,9 @@
 Contributors: Jessica Green
 Donate link: http://manga-press.silent-shadow.net/
 Tags: webcomics, online comics
-Requires at least: 2.7.1
+Requires at least: 2.8
 Tested up to: 2.8
-Stable tag: 2.0.1
+Stable tag: 2.5
 
 Manga+Press is a webcomic managment system for Wordpress.
 
@@ -12,13 +12,11 @@ Manga+Press is a webcomic managment system for Wordpress.
 
 Manga+Press is a webcomic managment system for Wordpress. Manga+Press uses Wordpress's posts, pages and categories to help you keep track of your comic posts. Manga+Press also includes its own custom template tags to help make creating themes easier.
 
-2.0.1 Update 7/7/2009 - Bug-fix. Discovered a problem in the code that when plugin is activated, database tables might not be created.
-
 == Installation ==
 
 1. Unpack the .zip file onto your hard drive.
 
-2. Upload the `mangapress` folder to the `/wp-content/plugins/` directory, then upload the `theme-manga-press` folder to the `/wp-content/themes/` directory.
+2. Upload the `mangapress` folder to the `/wp-content/plugins/` directory.
 
 3. Activate the plugin through the 'Plugins' menu in WordPress
 
@@ -28,14 +26,8 @@ Manga+Press is a webcomic managment system for Wordpress. Manga+Press uses Wordp
 
 6. Click on the Manga+Press page tab in your Admin area and go to Comic Options, and set Comic Category to your newly created category, and set Latest Comic Page, and Comic Archive Page to your two newly created pages.
 
-7. Activate the theme that comes with Manga+Press, and you should be ready to rock!
-
 
 == Frequently Asked Questions ==
-
-OMG! I activated the plugin and my posts disappeared from the front page! What happened!
-
-What happens is that when Manga+Press is activated for the first time, it defaults to the first created category that comes with a default Wordpress install (cat_ID = 1). You can get your posts back by following the above directions on setting a category to hold all of your comic posts. This really should only happen if you've activated the plugin *and* the theme.
 
 
 == Screenshots ==
@@ -50,7 +42,7 @@ What happens is that when Manga+Press is activated for the first time, it defaul
 
 Found a bug? Or did you find a bug and figure out a fix? Visit http://manga-press.silent-shadow.net/ or email me at jgreen@psy-dreamer.com. Please include screenshots, Wordpress version, a list of any other plugins you might have installed, or code (if you figured out a fix) and webserver configuration info; for example, Manga+Press was developed using a WAMP (Windows, Apache, MySQL, PHP) environment but works fine on the server my sites are hosted at, which is a LAMP environment. Be as detailed as possible.
 
-For updates, you can visit either http://manga-press.silent-shadow.net/ or http://www.dumpster-fairy.com.
+For updates, you can visit http://manga-press.silent-shadow.net/
 
 The Manga+Press Theme makes use of FamFamFam's Silk Icon set: http://www.famfamfam.com/lab/icons/silk/
 
