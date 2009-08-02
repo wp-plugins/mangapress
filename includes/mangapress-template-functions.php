@@ -73,9 +73,9 @@ global $wpdb, $mp_options, $post;
 function is_comic_page(){
 global $mp_options, $wp_query;
 
-	//debug( $wp_query->posts[0]->ID );
-
-	if ($wp_query->posts[0]->ID == $mp_options[latestcomic_page]) { return true; }
+	//debug( $wp_query );
+	//$wp_query->post->ID == $mp_options[latestcomic_page]
+	if ( is_page( $mp_options[latestcomic_page] ) ) { return true; }
 	else { return false; }	
 }
 /** 
@@ -204,10 +204,10 @@ function get_latest_comic_banner($nav = false) {
 	global $wpdb, $mp_options, $post_excerpt;
 
 	$latest = wp_comic_last();
-	$child = &get_posts( array( 'post_parent'=>$latest, 'post_type'=>'attachment', 'post_mime_type'=>'image', 'numberposts'=>1 ) );
-	$image = wp_get_attachment_image_src( $child[0]->ID, 'full' );
 
 	if ((int)$latest) {
+		$child = &get_posts( array( 'post_parent'=>$latest, 'post_type'=>'attachment', 'post_mime_type'=>'image', 'numberposts'=>1 ) );
+		$image = wp_get_attachment_image_src( $child[0]->ID, 'full' );
 		get_comic_post ( $latest );
 ?>
 <div class="comic-banner">
@@ -216,12 +216,10 @@ function get_latest_comic_banner($nav = false) {
         <img src="<?php bloginfo( 'url' ); ?>/wp-content/plugins/mangapress/timthumb.php?src=<?=$image[0]?>&amp;w=<?=$mp_options[banner_width]?>&amp;h=<?=$mp_options[banner_height]?>&amp;zc=1" class="comic-banner-image" />
         <span class="comic-banner-overlay">&nbsp;</span>
 	</span>
-<?
-		if ($nav) { wp_comic_navigation( $latest ); }
-	}
-?>
+<? if ($nav) { wp_comic_navigation( $latest ); } ?>
 </div>
 <?
+	}
 }
 /** 
  * get_comic_feed()
@@ -460,13 +458,14 @@ global $mp_options;
 function wp_sidebar_comic() {
 	
 	$ID = wp_comic_last();
-	$images =& get_children( 'post_type=attachment&post_mime_type=image&post_parent=' . $ID );
-	foreach( $images as $imageID => $imagePost )
-		$image = wp_get_attachment_metadata( $imageID );
-		$imgurl = wp_get_attachment_thumb_url( $imagePost->ID );
-		$res = getimagesize( $imgurl );
-		echo '<div class="comic-sidebar"><a href="'.get_permalink( $ID ).'" title="Latest Comic"><img src="'.$imgurl.'"'.$res[3].' style="border: none; " /></a></div>';
-		echo '<div class="comic-sidebar-link"><a href="'.get_permalink( $ID ).'" title="Latest Comic">Latest Comic</a></div>';
-		
+	if ($ID) {
+		$images =& get_children( 'post_type=attachment&post_mime_type=image&post_parent=' . $ID );
+		foreach( $images as $imageID => $imagePost )
+			$image = wp_get_attachment_metadata( $imageID );
+			$imgurl = wp_get_attachment_thumb_url( $imagePost->ID );
+			$res = getimagesize( $imgurl );
+			echo '<div class="comic-sidebar"><a href="'.get_permalink( $ID ).'" title="Latest Comic"><img src="'.$imgurl.'"'.$res[3].' style="border: none; " /></a></div>';
+			echo '<div class="comic-sidebar-link"><a href="'.get_permalink( $ID ).'" title="Latest Comic">Latest Comic</a></div>';
+	}
 }
 ?>
