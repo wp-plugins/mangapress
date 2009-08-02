@@ -10,7 +10,7 @@
  Plugin Name: Manga+Press Comic Manager
  Plugin URI: http://manga-press.silent-shadow.net/
  Description: Turns Wordpress into a full-featured Webcomic Manager. Be sure to visit <a href="http://manga-press.silent-shadow.net/">Manga+Press</a> for more info.
- Version: 2.5
+ Version: 2.5.1
  Author: Jessica Green
  Author URI: http://www.dumpster-fairy.com
 
@@ -81,7 +81,7 @@ include_once("includes/mangapress-template-functions.php");
 include_once("mangapress-display-tabs.php");
 
 if (!defined('MP_VERSION')) {
-	define('MP_VERSION',	'2.5');
+	define('MP_VERSION',	'2.5.1');
 }
 if (!defined('MP_DB_VERSION')) {
 	define('MP_DB_VERSION', '1.0');
