@@ -34,9 +34,6 @@ $sizeLimits = array(
 	"150x150",
 );
 */
-include_once("../../../wp-config.php");
-include_once(ABSPATH . "/wp-includes/pluggable.php");
-
 define("CACHE_SIZE", 200);		// number of files to store before clearing cache
 define("CACHE_CLEAR", 5);		// maximum number of files to delete on each cache clear
 define("VERSION", "1.08");		// version number (to force a cache refresh
@@ -82,8 +79,8 @@ if($src == "" || strlen($src) <= 3) {
 	
 	// set path to cache directory (default is ./cache)
 	// this can be changed to a different location
-	$cache_dir = WP_CONTENT_DIR.'/cache';
-	
+	$cache_dir = '../../../cache';
+
 	// get mime type of src
 	$mime_type = mime_type($src);
 	

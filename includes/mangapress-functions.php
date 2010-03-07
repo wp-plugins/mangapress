@@ -11,75 +11,46 @@
 /**
  * Updates multiple options from page-comic-options.php
  * 
- * @since 0.1b
+ * @since 2.6
+ *
+ * Originally update_options. Was modified and renamed in
+ * Manga+Press 2.6
  *
  * @global array $mp_options
  * @param array $options
- * @return int $status
+ * @return string
  */
-function update_options($options){
+function update_mangapress_options($options){
 global $mp_options;
-
-	check_admin_referer('mp_basic-options-form');
 	
-	extract( $options ); // so we can get $action
-		
-	switch($action):
+	// validate string options...
+	$nav_css_values = array( 'default_css', 'custom_css');
+	$order_by_values = array( 'post_date', 'post_id' );
+	//
+	// if the value of the option doesn't match the correct values in the array, then 
+	// the value of the option is set to its default.
+	in_array( $mp_options['nav_css'], $nav_css_values ) ? $mp_options['nav_css'] = strval( $options['nav_css'] ) : $mp_options['nav_css'] = 'default_css';
+	in_array( $mp_options['order_by'], $order_by_values ) ? $mp_options['order_by'] = strval( $options['order_by'] ) : $mp_options['order_by'] = 'post_date';
+	//
+	// Converting the values to their correct data-types should be enough for now...
+	$mp_options['insert_nav']			=	intval( $options['insert_nav'] );
+	$mp_options['latestcomic_cat']		=	intval( $options['latestcomic_cat'] );
+	$mp_options['comic_front_page']		=	intval( $options['comic_front_page'] );
+	$mp_options['latestcomic_page']		=	intval( $options['latestcomic_page'] );	
+	$mp_options['comic_archive_page']	=	intval( $options['comic_archive_page'] );
+	$mp_options['make_thumb']			=	intval( $options['make_thumb'] );
+	$mp_options['insert_banner']		=	intval( $options['insert_banner'] );
+	$mp_options['banner_width']			=	intval( $options['banner_width'] );
+	$mp_options['banner_height']		=	intval( $options['banner_height'] );
+	$mp_options['twc_code_insert']		=	intval( $options['twc_code_insert'] );
+	$mp_options['oc_code_insert']		=	intval( $options['oc_code_insert'] );
+	$mp_options['oc_comic_id']			=	intval( $options['oc_comic_id'] );
 	
-		case 'update_options':
-			$error['Latest Comic Category']	= $status = (bool)update_option('comic_latest_default_category',	$options[latest],		'',	'yes');
-			$error['Order By']				= $status = (bool)update_option('comic_order_by', 				$options[order_by],		'',	'yes');
-			$error['Latest Comic Page']		= $status = (bool)update_option('comic_latest_page',			$options[latest_page],	'',	'yes');
-			$error['Comic Archive Page']	= $status = (bool)update_option('comic_archive_page',			$options[archive_page],	'',	'yes');
-			$error['Use CSS']				= $status = (bool)update_option('comic_use_default_css',		$options[nav_css],		'',	'yes');
-			$error['Exclude from Home Page']= $status = (bool)update_option('comic_front_page',				$options[exclude_comic_cat],'',	'yes');
-			$error['Insert Comic Nav']		= $status = (bool)update_option('insert_nav',					$options[insert_nav],	'',	'yes');
-			$mp_options[latestcomic_cat]	=	get_option('comic_latest_default_category');
-			$mp_options[order_by]			=	get_option('comic_order_by');
-			$mp_options[latestcomic_page]	=	get_option('comic_latest_page');
-			$mp_options[comic_archive_page]	=	get_option('comic_archive_page');
-			$mp_options[nav_css]			=	get_option('comic_use_default_css');
-			$mp_options[comic_front_page]	=	get_option('comic_front_page');
-			$mp_options[insert_nav]			=	get_option('insert_nav');
-			$status = in_array(true, $error);
-		break;
-
-		case 'set_image_options':
-		
-			$error['Make Thumbnails']	= $status = update_option('comic_make_thmb', 	$options[make_thumb],	'',	'yes');
-			$error['Banner Width']		= $status = update_option('banner_width',	$options[banner_width],		'',	'yes');
-			$error['Banner Height'] 	= $status = update_option('banner_height',	$options[banner_height],	'',	'yes');
-			$error['Insert Banner'] 	= $status = update_option('insert_banner',	$options[insert_banner],'',	'yes');
-			$mp_options[make_thumb]			=	(bool)get_option('comic_make_thmb');	
-			$mp_options[banner_width]		=	(int)get_option('banner_width');
-			$mp_options[banner_height]		=	(int)get_option('banner_height');
-			$mp_options[insert_banner]		=	get_option('insert_banner');
-			$status = in_array(true, $error);
-			
-		break;
-		
-		case 'set_comic_updates':
-		
-			$error['Insert TWC code']		= $status = (bool)update_option('twc_code_insert',				$options[enable_twc_date_code],		'',	'yes');
-			$error['Insert OC.net code']	= $status = (bool)update_option('oc_code_insert',				$options[enable_onlinecomics_code],	'',	'yes');
-			$error['OC.net Comic ID']		= $status = (bool)update_option('oc_comic_id',					$options[ocn_comic_ID],		'',	'yes');
-			$mp_options[twc_code_insert]	=	get_option('twc_code_insert');
-			$mp_options[oc_code_insert]		=	get_option('oc_code_insert');
-			$mp_options[oc_comic_id]		=	get_option('oc_comic_id');
-			
-			$status = in_array(true, $error);
-		break;
-		
-		default:
-		break;
-	
-	endswitch;
-
-	return (int)$status;
+	return serialize( $mp_options );
 
 }
 /**
- * add_comic()
+ * mpp_add_comic()
  * 
  * This function adds the comic to the Wordpress database as a post
  * using the Wordpress function wp_insert_page. Was expanded in the
@@ -95,22 +66,19 @@ global $mp_options;
  * @param array $post_info Array passed by $_POST
  * @return string 
  */
-function add_comic(&$file, $post_info){
+function mpp_add_comic(&$file, $post_info){
 global $mp_options, $wpdb, $wp_rewrite, $add_comic_fired;
 	
 	check_admin_referer('mp_post-new-comic');
 	
 	$add_comic_fired = true;
 	
-	if ($post_info[title] == '') { return '<strong>Empty Title-field!</strong> Comic not added.'; }
+	if ($post_info['title'] == '') { return '<strong>Empty Title-field!</strong> Comic not added.'; }
 	$now = current_time('mysql'); // let's grab the time...need this for later on...
 	
-	$comicfile = wp_handle_upload($file[userfile], false, $now); // use Wordpress's native upload functions...makes more sense
-	$error = $comicfile[error];
-	
-	// let's check for errors.
-	if ($error != '') {
-		return $error;
+	$comicfile = wp_handle_upload($file['userfile'], false, $now); // use Wordpress's native upload functions...makes more sense
+	if (isset( $comicfile['error']) ) {
+		return $comicfile['error'];
 	} else {		
  	
 		// Create a new Comic Post object to pass to wp_insert_post()....
@@ -132,7 +100,7 @@ global $mp_options, $wpdb, $wp_rewrite, $add_comic_fired;
 			add_post_meta($post_id, 'comic', '1'); // adds required meta data to the post
 			$sql	=	$wpdb->prepare("INSERT INTO " . $wpdb->mpcomics . " (post_id, post_date) VALUES ('".$post_id."', '".$newcomic->post_date."') ;");
 			$wpdb->query($sql);
-			return 'Comic Added!'.$msg; // return post_id if it works...if not, return 0
+			return 'Comic Added!'; // return post_id if it works...if not, return 0
 		} else {
 			return 'Error! Comic not added...';
 		}
@@ -152,7 +120,7 @@ global $mp_options, $wpdb, $wp_rewrite, $add_comic_fired;
  * @param bool $popular_cats
  * @param object $walker 
  */
-function generate_category_checklist( $post_id = 0, $descendants_and_self = 0, $selected_cats = false, $popular_cats = false, $walker = null ) {
+function mpp_category_checklist( $post_id = 0, $descendants_and_self = 0, $selected_cats = false, $popular_cats = false, $walker = null ) {
 	if ( empty($walker) || !is_a($walker, 'Walker') )
 		$walker = new Walker_Category_Checklist;
 
@@ -174,8 +142,6 @@ function generate_category_checklist( $post_id = 0, $descendants_and_self = 0, $
 
 	if ( $descendants_and_self ) {
 		$categories = get_categories( "child_of=$descendants_and_self&hierarchical=1&hide_empty=0" );
-		//$self = get_category( $descendants_and_self );
-		//array_unshift( $categories, $self );
 	} else {
 		$categories = get_categories('get=all');
 	}
@@ -213,7 +179,7 @@ function generate_category_checklist( $post_id = 0, $descendants_and_self = 0, $
  * @since	0.5b
  * 
  */
-function add_navigation_css(){
+function mpp_add_nav_css(){
 	echo "<!-- Begin Manga+Press Navigation CSS -->\n";
 	echo "<style type=\"text/css\">\n";
 	echo "\t/* comic navigation */\n";
@@ -235,7 +201,7 @@ function add_navigation_css(){
  * @since	0.5b
  *
  */
-function add_header_info() {
+function mpp_add_header_info() {
 	echo "<meta name=\"Manga+Press\" content=\"".MP_VERSION."\" />\n";
 }
 /**
@@ -246,7 +212,7 @@ function add_header_info() {
  * 
  * @global bool $suppress_footer Optional boolean flag for controlling the appearance of the footer info
  */
-function add_footer_info(){
+function mpp_add_footer_info(){
 	global $suppress_footer;
 	
 	if (!$suppress_footer)
@@ -259,7 +225,7 @@ function add_footer_info(){
  * 
  * @global bool $suppress_meta Optional @see $suppress_footer
  */
-function add_meta_info(){
+function mpp_add_meta_info(){
 	global $suppress_meta;
 	
 	if (!$suppress_meta)
@@ -267,7 +233,7 @@ function add_meta_info(){
 }
 
 /**
- * add_comic(). Called by publish_post()
+ * mpp_add_comic_post(). Called by publish_post()
  *
  * @since 2.5
  * 
@@ -275,20 +241,18 @@ function add_meta_info(){
  * @global object $wpdb
  * @param int $id
  */
-function add_comic_post($id) {
+function mpp_add_comic_post($id) {
 	global $mp_options, $wpdb, $add_comic_fired;
 	
-	//$post = get_post($id);
 	$cats = wp_get_post_categories($id);
-	//add_post_meta($id, 'debug', '1');
 	
 	if (!$add_comic_fired) {
-		if ( in_array($mp_options[latestcomic_cat], $cats) ) {
+		if ( in_array($mp_options['latestcomic_cat'], $cats) ) {
 			
 			if ( !(bool)get_post_meta($id, 'comic') ) {
-				//add_post_meta($id, 'debug', '2');
 				add_post_meta($id, 'comic', '1');
-				$sql	=	$wpdb->prepare("INSERT INTO " . $wpdb->mpcomics . " (post_id, post_date) VALUES ('".$id."', '".current_time('mysql')."') ;");
+				$post = get_post( $id );
+				$sql	=	$wpdb->prepare("INSERT INTO " . $wpdb->mpcomics . " (post_id, post_date) VALUES ('".$id."', '".$post->post_date."') ;");
 				$wpdb->query($sql);
 			}
 		}
@@ -299,7 +263,7 @@ function add_comic_post($id) {
 	
 }
 /**
- * delete_comic()
+ * delete_comic_post()
  * is used to delete comic from the comics DB table
  * when comic is deleted via Manage Posts or Edit Post
  *
@@ -309,47 +273,41 @@ function add_comic_post($id) {
  * @see	delete_post()
  * 
  */
-function delete_comic($post_id){
+function mpp_delete_comic_post($post_id){
 global $wpdb;
 
 	$sql	=	$wpdb->prepare("DELETE FROM ".$wpdb->mpcomics." WHERE post_id=".$post_id.";");
 	$wpdb->query($sql);
 }
 /**
- * add_series()
- * is used to add category to the series table
+ * edit_comic_post(). Called by edit_post()
+ *
+ * @since 2.6
  * 
- * @since		1.0 RC1
- * @global object $wpdb Wordpress database object.
- * @global array $mp_options Array containing options for Manga+Press.
- * @param int $cat_ID Integer of category to be added to series database.
- * @see	create_category()
- * 
+ * @global array $mp_options
+ * @global object $wpdb
+ * @param int $id
  */
-function add_series($cat_ID) {
-global $wpdb, $mp_options;
-
-	$cat = get_category($cat_ID);
-	if ($cat->category_parent == $mp_options[latestcomic_cat]) {
-
-		$sql	=	$wpdb->prepare("INSERT INTO ".$wpdb->mpcomicseries."(term_id) VALUES ('".$cat_ID."');");
+function mpp_edit_comic_post($id) {
+	global $mp_options, $wpdb;
+	
+	$cats = wp_get_post_categories($id);
+	$value = (int)get_post_meta($id, 'comic', true);
+	//
+	// post has been edited, comic removed from comic categories...	
+	if ( !in_array($mp_options['latestcomic_cat'], $cats) && $value ) {
+		$sql	=	$wpdb->prepare("DELETE FROM ".$wpdb->mpcomics." WHERE post_id=".$id.";");
 		$wpdb->query($sql);
-
+		delete_post_meta( $id, 'comic' );
+		return;
+	} elseif ( in_array($mp_options['latestcomic_cat'], $cats) && $value ) {
+		if ( !is_comic($id) ) { // has meta value but if its not in the database, then add it
+			$post = get_post($id);
+			$sql	=	$wpdb->prepare("INSERT INTO " . $wpdb->mpcomics . " (post_id, post_date) VALUES ('".$id."', '".$post->post_date."') ;");
+			$wpdb->query($sql);
+			return;
+		}
 	}
-}
-/**
- * delete_series()
- * is used to delete category from the series DB table
- * when category is deleted via Manage Categories
- * 
- * @since 1.0 RC1
- * @see	delete_category()
- */
-function delete_series($cat_ID) {
-global $wpdb;
-
-	$sql	=	$wpdb->prepare("DELETE FROM ".$wpdb->mpcomicseries." WHERE term_id=".$cat_ID.";");
-	$wpdb->query($sql);
 }
 /**
  * filter_posts_frontpage()
@@ -364,36 +322,111 @@ global $wpdb;
  * @global int $post Post/Page object. Used in place of $id.
  * @global array $mp_options Array containing Manga+Press options.
  */
-function filter_posts_frontpage() {
+function mpp_filter_posts_frontpage() {
 	global $wpdb, $id, $cat, $page, $post, $mp_options, $query_string;
 
-	if (is_home() && $mp_options[comic_front_page] ) {
-		query_posts( $query_string."&cat=-".$mp_options[latestcomic_cat] );
+	if (is_home() && $mp_options['comic_front_page'] ) {
+		query_posts( $query_string."&cat=-".$mp_options['latestcomic_cat'] );
 	}
 }
 /**
  * filter_latest_comicpage()
  *
- * Makes changes to the_content() for Latest Comic Page. Hooked to the_post().
+ * Makes changes to the_content() for Latest Comic Page. Hooked to the_content().
  * 
  * @since 2.5
  * 
- * @global object $wpdb Wordpress database object. Not used.
- * @global int $id Post/Page id. Not used.
- * @global int $cat Category id. Not used.
- * @global int $post Post/Page object. Used in place of $id.
+ * @global object $wp Global WordPress query object.
  * @global array $mp_options Array containing Manga+Press options.
  */
-function filter_latest_comicpage() {
-	global $wpdb, $id, $cat, $post, $mp_options;
+function mpp_filter_latest_comicpage($content) {
+	global $mp_options, $wp;
 	
-	if ( $post->ID == (int)$mp_options[latestcomic_page] ) {
+	$page = get_page( $mp_options['latestcomic_page'] );
+	if ( @$wp->query_vars['pagename'] === $page->post_name ) {
+		$start = '';
+		$end = '';
+		$nav = '';
+		$twc_code = '';
+		//
+		// Now grab the most recent comic ID...
 		$latest = wp_comic_last();
+		//
+		// ...and its navigation...
+		$nav = wp_comic_navigation( $latest, false, false);
+		//
+		// ...and its post content, and set it up...
 		$post = get_post( $latest );
 		setup_postdata( $post );
+		//
+		// If OnlineComics PageScan code is enabled...
+		if ($mp_options['oc_code_insert']) {
+			$start = "\n<!-- OnlineComics.net ".$mp_options['oc_comic_id']." start -->\n";
+			$end = "\n<!-- OnlineComics.net ".$mp_options['oc_comic_id']." end -->\n";
+		}
+		//
+		// If TWC.com update code is enabled...
+		if ($mp_options['twc_code_insert']) {
+			$twc_code = "\n<!--Last Update: ".date('d/m/Y', strtotime($post->post_date))."-->\n";
+		}
+		
+		$content = $twc_code.$start.$nav.$post->post_content.$end;
 	}
+		
+	return $content;
 }
+/**
+ * filter_comic_archivepage()
+ *
+ * Makes changes to the_content() for Comic Archive Page. Hooked to the_content().
+ * 
+ * @since 2.6
+ * 
+ * @global object $wp Global WordPress query object.
+ * @global array $mp_options Array containing Manga+Press options.
+ */
+function mpp_filter_comic_archivepage($content){
+	global $mp_options, $wp;
+	
+	$page = get_page( $mp_options['comic_archive_page'] );
+	if ( @$wp->query_vars['pagename'] === $page->post_name ) {
+		$parchives = '';
+		if ($mp_options['twc_code']) {
+			$recent_post = get_post( wp_comic_last() );
+			setuppost_date( $recent_post );
+			
+			$parchives = "\n<!--Last Update: ".date('d/m/Y', strtotime($recent_post->post_date))."-->\n";
+		}
+		//
+		// Grab all available comic posts...
+		// Yes, this is sort of a "mini Loop"
+		$args = array( 'showposts'=>'10', 'cat'=>wp_comic_category_id(), 'orderby'=>'post_date' );
+		$posts = get_posts( $args );
+		if ( have_comics() ) :
+			
+			$parchives .= "<ul class=\"comic-archive-list\">\n";
+			
+			$c = 0;
+			foreach( $posts as $post) :	setup_postdata( $post );
+				
+				$c++;
+				$parchives .= "\t<li class=\"list-item-$c\">".date('m-d-Y', strtotime( $post->post_date ) )." <a href=\"".get_permalink( $post->ID )."\">$post->post_title</a></li>\n";
+			
+			endforeach;
+			
+			$parchives .= "</ul>\n";
 
+		else:
+			
+			$parchives = "No comics found";
+			
+		endif;
+		$content = $parchives;
+	}
+		
+	return $content;
+	
+}
 /**
  * comic_insert_navigation()
  *
@@ -406,14 +439,11 @@ function filter_latest_comicpage() {
  * @global int $cat Category ID. Not used.
  * @global array $mp_options Array containing Manga+Press options. 
  */
-function comic_insert_navigation() {
+function mpp_comic_insert_navigation() {
 	global $post, $id, $cat, $mp_options;
 	
-	if ( is_comic() && !is_category() && !is_front_page() ) {	
+	if ( is_comic() && !is_category() && !is_front_page() && !is_archive() ) {	
 		wp_comic_navigation($post->ID);
-	}elseif ( is_comic_page() ) {
-		$latest = wp_comic_last();
-		wp_comic_navigation($latest);
 	}
 	
 }
@@ -426,8 +456,8 @@ function comic_insert_navigation() {
  *
  * @since 2.5
  */
-function comic_insert_banner() {
-	if ( is_home() ){
+function mpp_comic_insert_banner() {
+	if ( is_home() || is_front_page() ){
 		get_latest_comic_banner(true);
 	}
 }
@@ -441,33 +471,22 @@ function comic_insert_banner() {
  * @since 2.5
  * @version 1.0
  */
-function comic_insert_twc_update_code() {
-	if ( is_comic_page() || is_home() || is_comic_archive_page() ){
+function mpp_comic_insert_twc_update_code() {
+	if ( is_home() || is_comic_archive_page() ){
 		$latest = wp_comic_last();
 		$post_latest = get_post($latest);
 		echo "\n<!--Last Update: ".date('d/m/Y', strtotime($post_latest->post_date))."-->\n";
 	}
 }
 /**
- * comic_insert_oc_update_code()
+ * mpp_comic_version()
  *
- * Inserts PageScan code for OnlineComics.net
+ * @since 2.0 beta
  *
- * @global array $mp_options
- * @global object $wp
- * @param string $content
+ * echoes the current version of Manga+Press.
  */
-function comic_insert_oc_update_code($content) {
-	global $mp_options, $wp;
+function mpp_comic_version() {
 	
-	$page = get_page( $mp_options[latestcomic_page] );
-	if ( $wp->query_vars[pagename] === $page->post_name ) {
-		$start = "\n<!-- OnlineComics.net ".$mp_options[oc_comic_id]." start -->\n";
-		$end = "\n<!-- OnlineComics.net ".$mp_options[oc_comic_id]." end -->\n";
-	}
-		
-	$ret = $start.$content.$end;
-	return $ret;
+	echo MP_VERSION;	
 }
-
 ?>

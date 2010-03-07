@@ -127,13 +127,13 @@ class WP_ComicPost {
 		get_currentuserinfo(); // needed to retrieve ID of currently logged in user
 		
 
-		$this->post_title		= $_post[title];
-		$this->post_content		= ($_post_type == 'post') ? $this->get_comicpage_html($file) : "Attachment for ".$_post[title];
-		$this->post_excerpt		= ($_post_type == 'post') ? $_post[excerpt] : '';
+		$this->post_title		= $_post['title'];
+		$this->post_content		= ($_post_type == 'post') ? $this->get_comicpage_html($file) : "Attachment for ".$_post['title'];
+		$this->post_excerpt		= ($_post_type == 'post') ? $_post['excerpt'] : '';
 		$this->post_status		= 'publish';
 		$this->post_type		= ($_post_type == 'post') ? 'post' : 'attachment';
 		$this->post_mime_type	= ($_post_type == 'post') ? '' : $file['type'];
-		$this->post_category	= $_post[post_category];
+		$this->post_category	= $_post['post_category'];
 		$this->post_author		= $userdata->ID;
 		$this->guid				= ($_post_type == 'post') ? '' : $file['url'];
 		$this->post_date		= current_time('mysql');
@@ -158,88 +158,6 @@ class WP_ComicPost {
 		
 		return $html;
 		
-	}
-}
-/**
- * WordPress PHP class to check for a new version.
- *
- * @package Manga_Press
- * @subpackage Check_Plugin
- * 
- * @author Alex Rabe & Joern Kretzschmar
- * @author Per S�derlind
- * @copyright 2007 / free for every usage
- *
- // Dashboard update notification example
-	function myPlugin_update_dashboard() {
-	  $Check = new CheckPlugin();	
-	  $Check->URL 	= "YOUR URL";
-	  $Check->version = "1.00";
-	  $Check->name 	= "myPlugin";
-	  if ($Check->startCheck()) {
- 	    echo '<h3>Update Information</h3>';
-	    echo '<p>A new version is available</p>';
-	  } 
-	}
-	
-	add_action('activity_box_end', 'myPlugin_update_dashboard', '0');
- *
- */
-if ( !class_exists( "CheckPlugin" ) ) {  
-	class CheckPlugin {
-		/**
-		 * URL with the version of the plugin
-		 * @var string
-		 */
-		var $URL = 'myURL';
-		/**
-		 * Version of thsi programm or plugin
-		 * @var string
-		 */
-		var $version = '1.00';
-		/**
-		 * Name of the plugin (will be used in the options table)
-		 * @var string
-		 */
-		var $name = 'myPlugin';
-		/**
-		 * Waiting period until the next check in seconds
-		 * @var int
-		 */
-		var $period = 86400;					
-					
-		function startCheck() {
-			/**
-			 * check for a new version, returns true if a version is avaiable
-			 */
-			
-			// use wordpress snoopy class
-			require_once(ABSPATH . WPINC . '/class-snoopy.php');
-			
-			$check_intervall = get_option( $this->name."_next_update" );
-
-			if ( ($check_intervall < time() ) or (empty($check_intervall)) ) {
-				if (class_exists(snoopy)) {
-					$client = new Snoopy();
-					$client->_fp_timeout = 10;
-					if (@$client->fetch($this->URL) === false) {
-						return false;
-					}
-					
-				   	$remote = $client->results;
-				   	
-					$server_version = unserialize($remote);
-					if (is_array($server_version)) {
-						if ( version_compare($server_version[$this->name], $this->version, '>') )
-						 	return true;
-					} 
-					
-					$check_intervall = time() + $this->period;
-					update_option( $this->name."_next_update", $check_intervall );
-					return false;
-				}				
-			}
-		}
 	}
 }
 ?>

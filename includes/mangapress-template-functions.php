@@ -53,10 +53,11 @@ global $wpdb, $mp_options;
  * @global object $post
  * @return bool
  */
-function is_comic(){
+function is_comic($id = 0){
 global $wpdb, $mp_options, $post;
 	
-	$sql = $wpdb->prepare("SELECT $post->ID FROM " . $wpdb->mpcomics . " WHERE post_id=$post->ID;");
+	if ($id == 0) $id = $post->ID;
+	$sql = $wpdb->prepare("SELECT $id FROM " . $wpdb->mpcomics . " WHERE post_id=$id;");
 	return (bool)$wpdb->get_col($sql);
 }
 /** 
@@ -67,16 +68,16 @@ global $wpdb, $mp_options, $post;
 * @since 1.0 RC1
 *
 * @global array $mp_options
-* @global object $post
+* @global object $wp_query
 * @return bool
 */
 function is_comic_page(){
 global $mp_options, $wp_query;
 
-	//debug( $wp_query );
-	//$wp_query->post->ID == $mp_options[latestcomic_page]
-	if ( is_page( $mp_options[latestcomic_page] ) ) { return true; }
-	else { return false; }	
+	if ( is_page( $mp_options['latestcomic_page'] ) )
+		return true;
+	else
+		return false;
 }
 /** 
 * is_comic_archive_page()
@@ -90,10 +91,12 @@ global $mp_options, $wp_query;
 * @return bool
 */
 function is_comic_archive_page(){
-global $mp_options, $post;
+global $mp_options, $wp_query;
 
-	if ($post->ID == $mp_options[comic_archive_page]) { return true; }
-	else { return false; }
+	if ( is_page( $mp_options['comic_archive_page'] ) )
+		return true;
+	else
+		return false;
 }
 /** 
 * is_series_cat()
@@ -102,18 +105,10 @@ global $mp_options, $post;
 * Checks to see if category is a series category
 *
 * @since 1.0 RC1
+* @deprecated since 2.6
 *
-* @global object $wpdb
-* @global integer $cat
-* @return bool
 */
-function is_series_cat() {
-global $wpdb, $cat;
-	$cat = (int)$cat;
-	
-	$sql = $wpdb->prepare("SELECT term_id FROM ".$wpdb->mpcomicseries." WHERE term_id=".$cat.";");
-	return (bool)$wpdb->query($sql);
-}
+function is_series_cat() {}
 /** 
 * is_comic_cat()
 *
@@ -132,38 +127,10 @@ global $cat, $mp_options, $wp_query;
 
 	if ($wp_query->is_category) {
 		$cat_obj = $wp_query->get_queried_object();  
-		return  (bool)($cat_obj->term_id == $mp_options[latestcomic_cat]);
+		return  (bool)($cat_obj->term_id == $mp_options['latestcomic_cat']);
 	} else {
 		return false;
 	}
-}
-/** 
-* the_comic()
-*
-* Custom template tag
-*
-* @since 1.0 RC1
-*
-* @global string $post_content
-*/
-function the_comic(){
-	global $post_content;
-	
-	echo $post_content;
-}
-/** 
-* the_banner()
-*
-* Custom template tag
-*
-* @since 2.0 beta
-*
-* @global string $post_excerpt
-*/
-function the_banner() {
-	global $post_excerpt;
-	
-	echo $post_excerpt;
 }
 /** 
 * get_comic_post()
@@ -183,10 +150,7 @@ function get_comic_post($id) {
 global $comic_page, $post_date, $post_content, $post_title, $post_excerpt;
 
 	$comic_page = get_post($id, OBJECT);
-
-	extract ( get_object_vars( $comic_page ) );
-
-	return get_object_vars( $comic_page );
+	return $comic_page;
 }
 /** 
 * get_latest_comic_banner()
@@ -206,54 +170,20 @@ function get_latest_comic_banner($nav = false) {
 	$latest = wp_comic_last();
 
 	if ((int)$latest) {
-		$child = &get_posts( array( 'post_parent'=>$latest, 'post_type'=>'attachment', 'post_mime_type'=>'image', 'numberposts'=>1 ) );
+		$child = get_posts( array( 'post_parent'=>$latest, 'post_type'=>'attachment', 'post_mime_type'=>'image', 'numberposts'=>1 ) );
 		$image = wp_get_attachment_image_src( $child[0]->ID, 'full' );
 		get_comic_post ( $latest );
 ?>
 <div class="comic-banner">
-	<h1><a href="<?php echo get_permalink( $latest )?>" title="<?php echo get_the_title( $latest )?>" class="new"><?php echo get_the_title( $latest )?></a></h1>
+	<h2><a href="<?php echo get_permalink( $latest )?>" title="<?php echo get_the_title( $latest )?>" class="new" rel="latest-comic"><?php echo get_the_title( $latest )?></a></h2>
 	<span class="comic-banner-wrap">
-        <img src="<?php bloginfo( 'url' ); ?>/wp-content/plugins/mangapress/timthumb.php?src=<?=$image[0]?>&amp;w=<?=$mp_options[banner_width]?>&amp;h=<?=$mp_options[banner_height]?>&amp;zc=1" class="comic-banner-image" />
-        <span class="comic-banner-overlay">&nbsp;</span>
+        <span class="comic-banner-overlay"></span>
+        <img src="<?php bloginfo( 'url' ); ?>/wp-content/plugins/mangapress/includes/mangapress-timthumb.php?src=<?=$image[0]?>&amp;w=<?=$mp_options['banner_width']?>&amp;h=<?=$mp_options['banner_height']?>&amp;zc=1" class="comic-banner-image" title="<?php echo get_the_title( $latest )?>" alt="<?php echo get_the_title( $latest )?>" />
 	</span>
-<? if ($nav) { wp_comic_navigation( $latest ); } ?>
+<?php if ($nav) { wp_comic_navigation( $latest ); } ?>
 </div>
-<?
+<?php
 	}
-}
-/** 
- * get_comic_feed()
- *
- * handles the trouble of getting a link to the Latest Comic category feed.
- * @link http://codex.wordpress.org/Function_Reference/get_category_feed_link More information
- *	
- * @since 1.0 RC1
- *
- * @global array $mp_options
- * @param string $feed Type of feed. Defaults to rss2 
- * @return string Returns link to category
- */
-function get_comic_feed($feed = 'rss2') {
-global $mp_options;
-
-	return get_category_feed_link($mp_options[latestcomic_cat], $feed);
-}
-/** 
- * get_comic_feed()
- *
- * handles the trouble of getting a link to the series category feed.
- * @link http://codex.wordpress.org/Function_Reference/get_category_feed_link More information
- *  
- * @since 1.0 RC1
- *
- * @param int $series ID of the series category.
- * @param string $feed Type of feed. Defaults to rss2
- * @return string Returns link to category.
- */
-function get_series_feed($series, $feed = 'rss2') {
-
-	return get_category_feed_link($series, $feed);
-	
 }
 /** 
  * wp_comic_first()
@@ -269,8 +199,8 @@ function get_series_feed($series, $feed = 'rss2') {
 function wp_comic_first(){
 global $wpdb, $mp_options;
 	
-	$mp_options[orderby] = ($mp_options[order_by])?$mp_options[order_by]:'post_id';
-	$sql = $wpdb->prepare("SELECT post_id FROM " . $wpdb->mpcomics . " ORDER BY ".$mp_options[order_by]." ASC LIMIT 1;");
+	$mp_options['order_by'] = ($mp_options['order_by'])?$mp_options['order_by']:'post_id';
+	$sql = $wpdb->prepare("SELECT post_id FROM " . $wpdb->mpcomics . " ORDER BY ".$mp_options['order_by']." ASC LIMIT 1;");
 	$rows = $wpdb->get_results($sql);
 
 	if(count($rows)) {
@@ -294,8 +224,8 @@ global $wpdb, $mp_options;
 function wp_comic_last(){
 global $wpdb, $mp_options;
 	
-	$mp_options[order_by] = ($mp_options[order_by])?$mp_options[order_by]:'post_id';
-	$sql = $wpdb->prepare("SELECT post_id FROM " . $wpdb->mpcomics . " ORDER BY ".$mp_options[order_by]." DESC LIMIT 1;");
+	$mp_options['order_by'] = ($mp_options['order_by'])?$mp_options['order_by']:'post_id';
+	$sql = $wpdb->prepare("SELECT post_id FROM " . $wpdb->mpcomics . " ORDER BY ".$mp_options['order_by']." DESC LIMIT 1;");
 	$rows = $wpdb->get_results($sql);
 
 	if(count($rows)) {
@@ -316,7 +246,7 @@ global $wpdb, $mp_options;
  * @param int $post_id ID of the comic post.
  * @param bool $banner_nav Not used.
  */
-function wp_comic_navigation($post_id, $banner_nav = false) {
+function wp_comic_navigation($post_id, $banner_nav = false, $echo = true) {
 global $wpdb; 
 	
 	$first = wp_comic_first();
@@ -342,7 +272,11 @@ global $wpdb;
 		</div>
 	';
 
-	echo $navigation;
+	if ($echo)
+		echo $navigation;
+	else
+		return $navigation;
+		
 }
 /** 
  * wp_comic_next()
@@ -360,8 +294,7 @@ global $wpdb;
 function wp_comic_next($post_id) {
 global $wpdb, $mp_options;
 
-	$mp_options[order_by] = ($mp_options[order_by])?$mp_options[order_by]:'post_id';
-	$sql = $wpdb->prepare("SELECT post_id FROM " . $wpdb->mpcomics . " WHERE post_id>$post_id ORDER BY ".$mp_options[order_by]." ASC LIMIT 1;");
+	$sql = $wpdb->prepare("SELECT post_id FROM " . $wpdb->mpcomics . " WHERE post_id>$post_id ORDER BY ".$mp_options['order_by']." ASC LIMIT 1;");
 	$rows = $wpdb->get_results($sql);
 
 	if(count($rows)) {
@@ -386,8 +319,7 @@ global $wpdb, $mp_options;
 function wp_comic_previous($post_id) {
 global $wpdb, $mp_options;
 
-	$mp_options[order_by] = ($mp_options[order_by])?$mp_options[order_by]:'post_id';
-	$sql = $wpdb->prepare("SELECT post_id FROM " . $wpdb->mpcomics . " WHERE post_id<$post_id ORDER BY ".$mp_options[order_by]." DESC LIMIT 1;");
+	$sql = $wpdb->prepare("SELECT post_id FROM " . $wpdb->mpcomics . " WHERE post_id<$post_id ORDER BY ".$mp_options['order_by']." DESC LIMIT 1;");
 	$rows = $wpdb->get_results($sql);
 
 	if(count($rows)) {
@@ -412,7 +344,7 @@ global $wpdb, $mp_options;
 function wp_comic_category_id() {
 global $mp_options;
 
-	return $mp_options[latestcomic_cat];
+	return $mp_options['latestcomic_cat'];
 }
 /** 
  * wp_comic_page_id()
@@ -429,7 +361,7 @@ global $mp_options;
 function wp_comic_page_id() {
 global $mp_options;
 
-	return $mp_options[latestcomic_page];
+	return $mp_options['latestcomic_page'];
 }
 /** 
  * wp_comic_archive_page_id()
@@ -446,7 +378,7 @@ global $mp_options;
 function wp_comic_archive_page_id() {
 global $mp_options;
 
-	return $mp_options[comic_archive_page];
+	return $mp_options['comic_archive_page'];
 }
 /**
  * wp_sidebar_comic()
@@ -464,8 +396,8 @@ function wp_sidebar_comic() {
 			$image = wp_get_attachment_metadata( $imageID );
 			$imgurl = wp_get_attachment_thumb_url( $imagePost->ID );
 			$res = getimagesize( $imgurl );
-			echo '<div class="comic-sidebar"><a href="'.get_permalink( $ID ).'" title="Latest Comic"><img src="'.$imgurl.'"'.$res[3].' style="border: none; " /></a></div>';
-			echo '<div class="comic-sidebar-link"><a href="'.get_permalink( $ID ).'" title="Latest Comic">Latest Comic</a></div>';
+			echo '<div class="comic-sidebar"><a href="'.get_permalink( $ID ).'" title="Latest Comic"><img src="'.$imgurl.'" '.$res[3].' style="border: none; " alt="" /></a></div>'."\n";
+			echo '<div class="comic-sidebar-link"><a href="'.get_permalink( $ID ).'" title="Latest Comic">Latest Comic</a></div>'."\n";
 	}
 }
 ?>
