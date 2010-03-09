@@ -1,7 +1,5 @@
 <?
 /**
- * This file contains all of the custom template tags for
- * displaying comics and navigation properly.
  * 
  * @package Manga_Press
  * @subpackage Manga_Press_Template_Functions
@@ -10,14 +8,11 @@
  */
 
 /**
-* This section handles the display of the comic navigation.
-*
-* The code for the comic navigation is based on
-* the MyComic Wordpress plugin found at
-* http://borkweb.com/story/wordpress-plugin-mycomic-browser
-* Manga+Press follows the same philosophy but automatically 
-* adds the required meta-data for the plugin to work properly
-**/
+ * This file contains all of the custom template tags for displaying comics and navigation properly.
+ *
+ * The code for the comic navigation is based on the MyComic Wordpress plugin found at http://borkweb.com/story/wordpress-plugin-mycomic-browser
+ * Manga+Press follows the same philosophy but automatically adds the required meta-data for the plugin to work properly.
+ */
 
 /**
  * have_comics()
@@ -29,7 +24,7 @@
  * 
  * @global object $wpdb
  * @global array $mp_options
- * @return bool 
+ * @return bool Returns true if there are comic-containing posts.
  */
 function have_comics(){
 global $wpdb, $mp_options;
@@ -41,17 +36,13 @@ global $wpdb, $mp_options;
 /**
  * is_comic()
  *
- * Custom Conditional Template Tag
- * generally used in the single.php template file
- * to check if article is actually a comic, and if
- * so, display the navigation
- *
+ * Used to detect if post contains a comic.
  * @since 0.1
  *
  * @global object $wpdb
  * @global array $mp_options
  * @global object $post
- * @return bool
+ * @return bool Returns true if post contains a comic, false if not.
  */
 function is_comic($id = 0){
 global $wpdb, $mp_options, $post;
@@ -63,13 +54,13 @@ global $wpdb, $mp_options, $post;
 /** 
 * is_comic_page()
 *
-* Custom Conditional Template Tag
+* Checks to see if page is the latest comic page specified in Manga+Press Options.
 *
 * @since 1.0 RC1
 *
 * @global array $mp_options
 * @global object $wp_query
-* @return bool
+* @return bool Returns true on success, false if page doesn't match.
 */
 function is_comic_page(){
 global $mp_options, $wp_query;
@@ -82,13 +73,13 @@ global $mp_options, $wp_query;
 /** 
 * is_comic_archive_page()
 *
-* Custom Conditional Template Tag
+* Checks to see if page is the comic archive page specified in Manga+Press Options.
 *
 * @since 1.0 RC1
 *
 * @global array $mp_options
-* @global object $post
-* @return bool
+* @global object $wp_query
+* @return bool Returns true on success, false if page doesn't match.
 */
 function is_comic_archive_page(){
 global $mp_options, $wp_query;
@@ -101,7 +92,6 @@ global $mp_options, $wp_query;
 /** 
 * is_series_cat()
 *
-* Custom Conditional Template Tag
 * Checks to see if category is a series category
 *
 * @since 1.0 RC1
@@ -112,12 +102,11 @@ function is_series_cat() {}
 /** 
 * is_comic_cat()
 *
-* Custom Conditional Template Tag
-* Checks to see if category is a series category
+* Checks to see if category is a comic category
 *
 * @since 1.0 RC1
 *
-* @global integer $cat
+* @global integer $cat Not used.
 * @global array $mp_options
 * @global object $wp_query
 * @return bool
@@ -135,7 +124,7 @@ global $cat, $mp_options, $wp_query;
 /** 
 * get_comic_post()
 *
-*
+* grabs a comic post by ID and returns it as an OBJECT.
 * @since 1.0 RC1
 *
 * @global object $comic_page
@@ -156,13 +145,14 @@ global $comic_page, $post_date, $post_content, $post_title, $post_excerpt;
 * get_latest_comic_banner()
 *
 * Custom template tag
+* Displays comic banner
 *
 * @since 2.1
 *
 * @global objecy $wpdb
 * @global array $mp_options
 * @global string $post_excerpt
-* @param bool $nav. Whether or not to display comic navigation below banner
+* @param bool $nav. Whether or not to display comic navigation below banner.
 */
 function get_latest_comic_banner($nav = false) {
 	global $wpdb, $mp_options, $post_excerpt;
@@ -238,13 +228,15 @@ global $wpdb, $mp_options;
 /** 
  * wp_comic_navigation()
  *
- * Template Tag
+ * Displays navigation for post specified by $post_id.
  *
  * @since 0.1b
  *
  * @global object $wpdb
  * @param int $post_id ID of the comic post.
  * @param bool $banner_nav Not used.
+ * @param bool $echo Specifies whether to echo comic navigation or return it as a string
+ * @return string Returns navigation string if $echo is set to false.
  */
 function wp_comic_navigation($post_id, $banner_nav = false, $echo = true) {
 global $wpdb; 
@@ -281,8 +273,7 @@ global $wpdb;
 /** 
  * wp_comic_next()
  *
- * Retrieves the next comic from the
- * current comic $post_id
+ * Retrieves the comic after the current comic specified by $post_id
  *
  * @since 0.1b
  *
@@ -306,8 +297,7 @@ global $wpdb, $mp_options;
 /** 
  * wp_comic_previous()
  *
- * Retrieves the previous comic from the
- * current comic $post_id
+ * Retrieves previous comic before the current comic specified by $post_id
  *
  * @since 0.1b
  *
@@ -331,8 +321,7 @@ global $wpdb, $mp_options;
 /** 
  * wp_comic_category_id()
  *
- * Returns the value of $mp_options[latestcomic_cat]
- * for use in templates
+ * Returns the value of $mp_options[latestcomic_cat] for use in templates
  *
  *
  * @since 1.0 RC1
@@ -349,8 +338,7 @@ global $mp_options;
 /** 
  * wp_comic_page_id()
  *
- * Returns the value of $mp_options[latestcomic_page]
- * for use in templates
+ * Returns the value of $mp_options[latestcomic_page] for use in templates
  *
  * @since 1.0 RC1
  * @deprecated
@@ -366,8 +354,7 @@ global $mp_options;
 /** 
  * wp_comic_archive_page_id()
  *
- * Returns the value of $mp_options[comic_archive_page]
- * for use in templates
+ * Returns the value of $mp_options[comic_archive_page] for use in templates
  *
  * @since 1.0 RC1
  * @deprecated
@@ -383,7 +370,7 @@ global $mp_options;
 /**
  * wp_sidebar_comic()
  *
- * displays a recent comic thumbnail in the sidebar
+ * Displays a recent comic thumbnail in the sidebar
  *
  * @since 2.0
  */

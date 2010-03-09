@@ -1,11 +1,11 @@
 <?
 /**
- * Manga+Press plugin Functions
- * This is where the actual work gets done...
- * 
  * @package Manga_Press
  * @subpackage Core_Functions
  * @since	0.1b
+ * 
+ * Manga+Press plugin Functions
+ * This is where the actual work gets done...
  * 
 */
 /**
@@ -55,8 +55,10 @@ global $mp_options;
  * This function adds the comic to the Wordpress database as a post
  * using the Wordpress function wp_insert_page. Was expanded in the
  * beta release of the 2.0 branch to take over the functionality of
- * upload_comic(.)Used by:	post-new-comic.php
+ * upload_comic()Used by:	post-new-comic.php
  * 
+ * @link http://php.net/manual/en/reserved.variables.files.php $_FILES
+ * @link http://php.net/manual/en/reserved.variables.post.php $_POST
  * @since 0.1b
  * 
  * @global array $mp_options
@@ -235,6 +237,7 @@ function mpp_add_meta_info(){
 /**
  * mpp_add_comic_post(). Called by publish_post()
  *
+ * @link http://codex.wordpress.org/Plugin_API/Action_Reference publish_post
  * @since 2.5
  * 
  * @global array $mp_options
@@ -282,6 +285,7 @@ global $wpdb;
 /**
  * edit_comic_post(). Called by edit_post()
  *
+ * @link http://codex.wordpress.org/Plugin_API/Action_Reference edit_post
  * @since 2.6
  * 
  * @global array $mp_options
@@ -343,10 +347,20 @@ function mpp_filter_latest_comicpage($content) {
 	global $mp_options, $wp;
 	
 	$page = get_page( $mp_options['latestcomic_page'] );
-	if ( @$wp->query_vars['pagename'] === $page->post_name ) {
+	
+	if ( get_option('show_on_front') == 'page' && is_front_page() ) {
+		$front_page_id = get_option('page_on_front');
+		$front_page = get_page( $front_page_id );
+		$comic_page = $front_page->post_name;
+	} else {
+		$comic_page = @$wp->query_vars['pagename'];
+	}
+	
+	if ( $comic_page === $page->post_name ) {
 		$start = '';
 		$end = '';
 		$nav = '';
+		$ptitle = '';
 		$twc_code = '';
 		//
 		// Now grab the most recent comic ID...
@@ -358,6 +372,7 @@ function mpp_filter_latest_comicpage($content) {
 		// ...and its post content, and set it up...
 		$post = get_post( $latest );
 		setup_postdata( $post );
+		$ptitle = '<h2 class="comic-title">'.$post->post_title.'</h2>';
 		//
 		// If OnlineComics PageScan code is enabled...
 		if ($mp_options['oc_code_insert']) {
@@ -370,7 +385,7 @@ function mpp_filter_latest_comicpage($content) {
 			$twc_code = "\n<!--Last Update: ".date('d/m/Y', strtotime($post->post_date))."-->\n";
 		}
 		
-		$content = $twc_code.$start.$nav.$post->post_content.$end;
+		$content = $twc_code.$start.$ptitle.$nav.$post->post_content.$end;
 	}
 		
 	return $content;

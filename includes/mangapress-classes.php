@@ -1,13 +1,12 @@
 <?
 /**
- * A very simple Wordpress Post class for simplifying
- * the posting of comics. Used by add_comic()
- * @see add_comic()
- * 
+ * A very simple Wordpress Post class for simplifying the posting of comics. Used by add_comic()
+ *
  * @package Manga_Press
  * @subpackage WP_ComicPost
  * @since 0.1
-*/
+ * @see add_comic()
+ */
 class WP_ComicPost {
     /**
      * Title of post to be added.

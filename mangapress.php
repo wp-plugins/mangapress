@@ -1,16 +1,15 @@
 <?php
 /**
  * @package Manga_Press
- * @version 2.6b
+ * @version 2.6.1
  * @author Jessica Green <jgreen@psy-dreamer.com>
  *
- * @todo Manga+Press website: Create Help Wiki.
  */
 /*
  Plugin Name: Manga+Press Comic Manager
  Plugin URI: http://manga-press.silent-shadow.net/
  Description: Turns Wordpress into a full-featured Webcomic Manager. Be sure to visit <a href="http://manga-press.silent-shadow.net/">Manga+Press</a> for more info.
- Version: 2.6
+ Version: 2.6.1
  Author: Jessica Green
  Author URI: http://www.dumpster-fairy.com
 */
@@ -31,14 +30,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * 
  */
-/**
- * Global variables section
- *
- * @global object $wp_rewrite. WP_Rewrite object. @link http://codex.wordpress.org/Function_Reference/WP_Rewrite
- * @global object $wpdb. WPDB (Wordpress Database) Class object. @link http://codex.wordpress.org/Function_Reference/wpdb_Class
- * @global string $wp_version. Wordpres version declaration.
- * @global array $mp_options. Manga+Press options array.
- */ 
 if(preg_match('#' . basename(__FILE__) . '#', $_SERVER['PHP_SELF'])) { die('You are not allowed to call this page directly.'); }
 //ini_set('error_reporting', E_ALL);
 
@@ -48,7 +39,12 @@ include_once("includes/mangapress-classes.php");
 include_once("includes/mangapress-functions.php");
 include_once("includes/mangapress-template-functions.php");
 include_once("includes/mangapress-pages.php");
-
+/**
+ * @global object $wp_rewrite. WP_Rewrite object. @link http://codex.wordpress.org/Function_Reference/WP_Rewrite
+ * @global object $wpdb. WPDB (Wordpress Database) Class object. @link http://codex.wordpress.org/Function_Reference/wpdb_Class
+ * @global string $wp_version. Wordpres version declaration.
+ * @global array $mp_options. Manga+Press options array.
+ */ 
 global $wp_rewrite, $wpdb, $wp_version, $wp_roles, $mp_options;
 
 $wpdb->mpcomics = $wpdb->prefix . 'comics';
@@ -170,6 +166,7 @@ require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 		mangapress_set_options();
 			
    	$wp_rewrite->flush_rules();
+	
 }
 
 /**
@@ -339,7 +336,7 @@ global $mp_options, $wpdb;
 }
 function mpp_debug($varb){
 	
-	echo "<pre style='height: 400px; overflow: scroll; text-align: left; font-family: fixed; font-size: 12px;'>";
+	echo "<pre style='text-align: left; font-family: fixed; font-size: 12px;'>";
 	var_dump($varb);
 	echo "</pre><br />";
 }

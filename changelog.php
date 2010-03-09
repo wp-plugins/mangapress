@@ -1,5 +1,10 @@
 <?php
 /**
+ * @package Manga_Press
+ * @subpackage Manga_Press_Changelog
+ * @since 2.5
+*/
+/**
  * Changelog
  * 0.1b	-	initial launch
  * 0.2b	-	10/14/08 Updated SQL queries to use $wpdb->prepare to help prevent SQL injection attacks.
@@ -32,7 +37,7 @@
  * 				out over multiple entries.
  *				Fixed bugs that were present in 2.5. Manga+Press options page now located under Settings, Post New Comic page has
  *				been moved to Posts and Uninstall Manga+Press is located under Plugins.
+ * 2.6.1	-	Corrected Static page issue. Also changed mpp_filter_latest_comicpage() so that Post title is included in output.
  *
- *              TODO: Manga+Press website: Create Help Wiki.
  */
 ?>

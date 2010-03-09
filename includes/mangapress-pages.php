@@ -26,7 +26,7 @@ global $mp_options;
 <div class="wrap">
 <h2>Post New Comic</h2>
 	<form enctype="multipart/form-data" action="<?=$_SERVER['REQUEST_URI']?>" method="POST">
-	<input type="hidden" name="MAX_FILE_SIZE" value="500000" />
+	<input type="hidden" name="MAX_FILE_SIZE" value="1000000" />
 	<input type="hidden" name="action" value="wp_handle_upload" />
     <?php wp_nonce_field('mp_post-new-comic'); ?>
     
