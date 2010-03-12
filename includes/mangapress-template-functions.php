@@ -242,16 +242,16 @@ function wp_comic_navigation($post_id, $banner_nav = false, $echo = true) {
 global $wpdb; 
 	
 	$first = wp_comic_first();
-	$first = ($first == $post_id || !$first)?'<span class="comic-nav-span">First</span>':'<a href="'.get_permalink($first).'">First</a>';
+	$first = ($first == $post_id || !$first)?'<span class="comic-nav-span">'.__('First', 'mangapress').'</span>':'<a href="'.get_permalink($first).'">'.__('First', 'mangapress').'</a>';
 	
 	$last = wp_comic_last();
-	$last = ($last == $post_id || !$last)?'<span class="comic-nav-span">Last</span>':'<a href="'.get_permalink($last).'">Last</a>';
+	$last = ($last == $post_id || !$last)?'<span class="comic-nav-span">'.__('Last', 'mangapress').'</span>':'<a href="'.get_permalink($last).'">'.__('Last', 'mangapress').'</a>';
 	
 	$next = wp_comic_next($post_id);
-	$next = ($next == $post_id || !$next)?'<span class="comic-nav-span">Next</span>':'<a href="'.get_permalink($next).'">Next</a>';
+	$next = ($next == $post_id || !$next)?'<span class="comic-nav-span">'.__('Next', 'mangapress').'</span>':'<a href="'.get_permalink($next).'">'.__('Next', 'mangapress').'</a>';
 	
 	$previous = wp_comic_previous($post_id);
-	$previous = ($previous==$post_id || !$previous)?'<span class="comic-nav-span">Previous</span>':'<a href="'.get_permalink($previous).'">Previous</a>';
+	$previous = ($previous==$post_id || !$previous)?'<span class="comic-nav-span">'.__('Previous', 'mangapress').'</span>':'<a href="'.get_permalink($previous).'">'.__('Previous', 'mangapress').'</a>';
 
 	$navigation='
 		<div class="comic-navigation">
@@ -383,8 +383,8 @@ function wp_sidebar_comic() {
 			$image = wp_get_attachment_metadata( $imageID );
 			$imgurl = wp_get_attachment_thumb_url( $imagePost->ID );
 			$res = getimagesize( $imgurl );
-			echo '<div class="comic-sidebar"><a href="'.get_permalink( $ID ).'" title="Latest Comic"><img src="'.$imgurl.'" '.$res[3].' style="border: none; " alt="" /></a></div>'."\n";
-			echo '<div class="comic-sidebar-link"><a href="'.get_permalink( $ID ).'" title="Latest Comic">Latest Comic</a></div>'."\n";
+			echo '<div class="comic-sidebar"><a href="'.get_permalink( $ID ).'" title="'.__('Latest Comic','mangapress').'"><img src="'.$imgurl.'" '.$res[3].' style="border: none; " alt="" /></a></div>'."\n";
+			echo '<div class="comic-sidebar-link"><a href="'.get_permalink( $ID ).'" title="'.__('Latest Comic','mangapress').'">'.__('Latest Comic','mangapress').'</a></div>'."\n";
 	}
 }
 ?>

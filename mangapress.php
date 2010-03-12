@@ -1,7 +1,7 @@
 <?php
 /**
  * @package Manga_Press
- * @version 2.6.1
+ * @version 2.6.2
  * @author Jessica Green <jgreen@psy-dreamer.com>
  *
  */
@@ -9,7 +9,7 @@
  Plugin Name: Manga+Press Comic Manager
  Plugin URI: http://manga-press.silent-shadow.net/
  Description: Turns Wordpress into a full-featured Webcomic Manager. Be sure to visit <a href="http://manga-press.silent-shadow.net/">Manga+Press</a> for more info.
- Version: 2.6.1
+ Version: 2.6.2
  Author: Jessica Green
  Author URI: http://www.dumpster-fairy.com
 */
@@ -32,7 +32,6 @@
  */
 if(preg_match('#' . basename(__FILE__) . '#', $_SERVER['PHP_SELF'])) { die('You are not allowed to call this page directly.'); }
 //ini_set('error_reporting', E_ALL);
-
 include_once(ABSPATH . "/wp-includes/pluggable.php");
 include_once("includes/mangapress-constants.php");
 include_once("includes/mangapress-classes.php");
@@ -57,6 +56,7 @@ if ( version_compare( $installed_ver, '2.9', '==' ) ) {
 	update_option('mangapress_ver', MP_VERSION, '', 'no');	
 }
 
+add_action('init', 'mangapress_init');
 add_action('admin_init', 'mangapress_options_init');
 add_action('admin_menu', 'mangapress_admin_init');
 add_action('delete_post', 'mpp_delete_comic_post');
@@ -74,7 +74,19 @@ if ( (bool)$mp_options['comic_archive_page'] ) add_action('the_content', 'mpp_fi
 if ($mp_options['twc_code_insert']) add_action('loop_start', 'mpp_comic_insert_twc_update_code');
 if ($mp_options['insert_banner']) add_action('loop_start', 'mpp_comic_insert_banner'); 
 if ($mp_options['insert_nav']) add_action('loop_start', 'mpp_comic_insert_navigation'); 
+/**
+ * mangapress_init()
+ * 
+ * @since 2.6.2
+ *
+ * Handles any functions needed during plugin init, like loading text domains.
+ */
+function mangapress_init(){
+	
+	$plugin_dir = basename(dirname(__FILE__)). '/lang';
+	load_plugin_textdomain( 'mangapress', false, $plugin_dir);
 
+}
 /**
  * mangapress_admin_init()
  *
@@ -86,12 +98,12 @@ if ($mp_options['insert_nav']) add_action('loop_start', 'mpp_comic_insert_naviga
 function mangapress_admin_init() {
 global $mp_options;
 
-	add_options_page("Manga+Press Options",	"Manga+Press Options",	'manage_options',	'mangapress-options',	'mangapress_options_page');
-	add_submenu_page('edit.php', "Manga+Press Options", "Post New Comic" ,'administrator', 'post-comic', 'mangapress_post_comic');
+	add_options_page( __("Manga+Press Options",'mangapress'),	__("Manga+Press Options",'mangapress'),	'manage_options',	'mangapress-options',	'mangapress_options_page');
+	add_submenu_page('edit.php', __("Manga+Press New Comic",'mangapress'), __("Post New Comic",'mangapress') ,'administrator', 'post-comic', 'mangapress_post_comic');
 	
-	$uninstall	=	add_submenu_page("plugins.php",	"Manga+Press Options",	"Manga+Press Uninstall",	'administrator',	'uninstall',	'remove_mangapress');
+	$uninstall	=	add_submenu_page("plugins.php",	 __("Manga+Press Options",'mangapress'),	__("Manga+Press Uninstall",'mangapress'),	'administrator',	'uninstall',	'remove_mangapress');
 	if ( get_option('mangapress_upgrade') == 'yes' ){
-		$upgrade =  add_submenu_page("plugins.php",	"Manga+Press Options",	"Manga+Press Upgrade",		'administrator',	'upgrade', 		'upgrade_mangapress');
+		$upgrade =  add_submenu_page("plugins.php",	__("Manga+Press Options",'mangapress'),		__("Manga+Press Upgrade",'mangapress'),		'administrator',	'upgrade', 		'upgrade_mangapress');
 	}
 }
 
@@ -122,14 +134,14 @@ require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
 	// Check for capability
 	if ( !current_user_can('activate_plugins') ) 
-		wp_die( __('Sorry, you do not have suffient permissions to activate this plugin.') );
+		wp_die( __('Sorry, you do not have suffient permissions to activate this plugin.', 'mangapress') );
 	
 	// Get the capabilities for the administrator
 	$role = get_role('administrator');
 	
 	// Must have admin privileges in order to activate.
 	if ( empty($role) )
-		wp_die( __('Sorry, you must be an Administrator in order to use Manga+Press') );
+		wp_die( __('Sorry, you must be an Administrator in order to use Manga+Press', 'mangapress') );
 
 	//
 	// On activation, check if tables already exist. If they don't, create them
@@ -259,13 +271,13 @@ require_once(ABSPATH . 'wp-admin/upgrade-functions.php');
 		
 		$wpdb->mpcomicseries	= $wpdb->prefix . 'comics_series';
 
-		$msg .= "Upgrading Manga+Press...<br />";
+		$msg .= __("Upgrading Manga+Press...<br />", 'mangapress');
 		
 		// these two options are new in 2.6	
 		add_option('mangapress_ver',		MP_VERSION,				'', 'no');
 		add_option('mangapress_db_ver',		MP_DB_VERSION,			'',	'no');
 		
-		$msg .= 'Deleting old options....<br/>';
+		$msg .= __('Deleting old options....<br/>', 'mangapress');
 		//
 		// Remove options from previous version, which would be versions 1.0 to 2.5
 		delete_option('comic_latest_default_category');
@@ -288,7 +300,7 @@ require_once(ABSPATH . 'wp-admin/upgrade-functions.php');
 		delete_option('insert_banner');
 		
 		delete_option('mangapress_upgrade');
-		$msg .= 'Old options have been deleted from the database.<br/>';
+		$msg .= __('Old options have been deleted from the database.', 'mangapress').'<br/>';
 		//
 		// Make changes to databases...
 		if(($wpdb->get_var("show tables like '".$wpdb->mpcomics."'") != $wpdb->mpcomics)) {
@@ -297,9 +309,9 @@ require_once(ABSPATH . 'wp-admin/upgrade-functions.php');
 		if( $wpdb->get_var("show tables like '".$wpdb->mpcomicseries."'") ) {
 			$sql = $wpdb->prepare( "DROP TABLE ". $wpdb->mpcomicseries .";" );
 			$wpdb->query($sql);
-			$msg .=  "$wpdb->mpcomicseries has been removed.<br />";
+			$msg .=  __("$wpdb->mpcomicseries has been removed.", 'mangapress')."<br />";
 		}
-		$msg .= "Manga+Press has been upgraded to ".MP_VERSION."<br />";
+		$msg .= __("Manga+Press has been upgraded to ", 'mangapress').MP_VERSION."<br />";
 	}
 	return $msg;
 }

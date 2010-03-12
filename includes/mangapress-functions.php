@@ -13,8 +13,7 @@
  * 
  * @since 2.6
  *
- * Originally update_options. Was modified and renamed in
- * Manga+Press 2.6
+ * Originally update_options. Was modified and renamed in Manga+Press 2.6
  *
  * @global array $mp_options
  * @param array $options
@@ -75,7 +74,7 @@ global $mp_options, $wpdb, $wp_rewrite, $add_comic_fired;
 	
 	$add_comic_fired = true;
 	
-	if ($post_info['title'] == '') { return '<strong>Empty Title-field!</strong> Comic not added.'; }
+	if ($post_info['title'] == '') { return __('<strong>Empty Title-field!</strong> Comic not added.', 'mangapress'); }
 	$now = current_time('mysql'); // let's grab the time...need this for later on...
 	
 	$comicfile = wp_handle_upload($file['userfile'], false, $now); // use Wordpress's native upload functions...makes more sense
@@ -102,9 +101,9 @@ global $mp_options, $wpdb, $wp_rewrite, $add_comic_fired;
 			add_post_meta($post_id, 'comic', '1'); // adds required meta data to the post
 			$sql	=	$wpdb->prepare("INSERT INTO " . $wpdb->mpcomics . " (post_id, post_date) VALUES ('".$post_id."', '".$newcomic->post_date."') ;");
 			$wpdb->query($sql);
-			return 'Comic Added!'; // return post_id if it works...if not, return 0
+			return __('Comic Added!', 'mangapress'); // return post_id if it works...if not, return 0
 		} else {
-			return 'Error! Comic not added...';
+			return __('Error! Comic not added...', 'mangapress');
 		}
 	}
 }
@@ -218,7 +217,7 @@ function mpp_add_footer_info(){
 	global $suppress_footer;
 	
 	if (!$suppress_footer)
-		echo "<br />Powered by <a href=\"http://manga-press.silent-shadow.net\">Manga+Press</a> ".MP_VERSION;
+		echo "<br />".__('Powered by', 'mangepress')." <a href=\"http://manga-press.silent-shadow.net\">Manga+Press</a> ".MP_VERSION;
 }
 /**
  * add_meta_info(). Called by:	wp_meta()
@@ -231,7 +230,7 @@ function mpp_add_meta_info(){
 	global $suppress_meta;
 	
 	if (!$suppress_meta)
-		echo "<li><a href=\"http://manga-press.silent-shadow.net\" title=\"Powered by Manga+Press ".MP_VERSION.", a revolutionary new web comic management system for Wordpress\">Manga+Press</a></li>";
+		echo "<li><a href=\"http://manga-press.silent-shadow.net\" title=\"".__('Powered by', 'mangepress')." Manga+Press ".MP_VERSION.", ".__('a revolutionary new web comic management system for Wordpress', 'mangapress')."\">Manga+Press</a></li>";
 }
 
 /**
@@ -433,7 +432,7 @@ function mpp_filter_comic_archivepage($content){
 
 		else:
 			
-			$parchives = "No comics found";
+			$parchives = __("No comics found", 'mangapress');
 			
 		endif;
 		$content = $parchives;

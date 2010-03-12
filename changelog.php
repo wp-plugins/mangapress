@@ -38,6 +38,7 @@
  *				Fixed bugs that were present in 2.5. Manga+Press options page now located under Settings, Post New Comic page has
  *				been moved to Posts and Uninstall Manga+Press is located under Plugins.
  * 2.6.1	-	Corrected Static page issue. Also changed mpp_filter_latest_comicpage() so that Post title is included in output.
+ * 2.6.2	-	Added multi-language support and made changes to directory parsing in mangapress-constants.php
  *
  */
 ?>
