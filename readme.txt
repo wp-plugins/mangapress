@@ -4,13 +4,19 @@ Donate link: http://manga-press.silent-shadow.net/
 Tags: webcomics, online comics
 Requires at least: 2.8
 Tested up to: 2.9.1
-Stable tag: 2.6.1
+Stable tag: 2.6.2
 
 Manga+Press is a webcomic managment system for Wordpress.
 
 == Description ==
 
-Manga+Press is a webcomic managment system for Wordpress. Manga+Press uses Wordpress's posts, pages and categories to help you keep track of your comic posts. Manga+Press also includes its own custom template tags to help make creating themes easier. Version 2.5 contains some new features listed here:
+Manga+Press is a webcomic managment system for Wordpress. Manga+Press uses Wordpress's posts, pages and categories to help you keep track of your comic posts. Manga+Press also includes its own custom template tags to help make creating themes easier.
+
+= New in 2.6.2 =
+
+* Improved multi-language support. Spanish currently supported. POT file included for other translators to use.
+
+= Current Features: =
 
 * Automatic Options:
 
@@ -37,12 +43,14 @@ Manga+Press is a webcomic managment system for Wordpress. Manga+Press uses Wordp
 
 == Changelog ==
 
-= 1.0 =
-* 1.0 RC1 General maintenance, fixing up look-and-feel of admin side. Putting together companion theme.
+= 2.6 =
+* 2.6b	Changed handling of plugin options so that they are compatible with Wordpress 2.8 and higher. They are now stored in one entry in the options table instead of being spread out over multiple entries. Moved Manga+Press options page to Settings, Uninstall to Plugins, and Post New Comic to Posts. Removed /admin, /css, /js as they were no longer necessary for the plugin to function.
+* 2.6	Fixed bugs that were present in 2.5. Manga+Press options page now located under Settings, Post New Comic page has been moved to Posts and Uninstall Manga+Press is located under Plugins.
+* 2.6.1	Corrected Static page issue. Also changed mpp_filter_latest_comicpage() so that Post title is included in output.
+* 2.6.2	Added multi-language support and made changes to directory parsing in mangapress-constants.php. Included spanish language PO/MO files.
 
-* 1.0 RC2 Modified add_comic(), add_footer_info()
-
-* 1.0 RC2.5	Found a major bug involving directory/file permissions. Has been corrected, but I'm keeping my eye on this one for future reference. See website for a fix.
+= 2.5 =
+* 2.1/2.5 2.1 renamed to 2.5. Eliminated the banner skin option and all functions attached. Feature can be duplicated with a little CSS positioning. Option for creating a banner from uploaded comic or uploading a seperate banner still remains, as well as the option to set banner width & height. Removed both the Manga+Press help and Template Tag pages. Will be hosted in a help wiki on the Manga+Press website. Made changes to the Post Comic page. Also reworded the "New Version" text. Created options to have the comic banner & navigation included at the top of The Loop on the home page, as well automatically filtering comic categories from the front page and automatically modifying The Loop for the latest comic page. Removed the make banner option.
 
 = 2.0 =
 * 2.0beta Major reworking of code in mangapress-classes.php and mangapress-fucntions.php
@@ -55,13 +63,13 @@ Manga+Press is a webcomic managment system for Wordpress. Manga+Press uses Wordp
 
 * 2.0.1beta	Corrected a minor bug in update_options. Banner skin wouldn't be uploaded even if "use banner skin" option were checked and user had selected an image for upload. Also corrected a jQuery UI Tabs bug in the user admin area that is present when Manga+Press is used with Wordpress 2.8
 
-= 2.5 =
-* 2.1/2.5 2.1 renamed to 2.5. Eliminated the banner skin option and all functions attached. Feature can be duplicated with a little CSS positioning. Option for creating a banner from uploaded comic or uploading a seperate banner still remains, as well as the option to set banner width & height. Removed both the Manga+Press help and Template Tag pages. Will be hosted in a help wiki on the Manga+Press website. Made changes to the Post Comic page. Also reworded the "New Version" text. Created options to have the comic banner & navigation included at the top of The Loop on the home page, as well automatically filtering comic categories from the front page and automatically modifying The Loop for the latest comic page. Removed the make banner option.
+= 1.0 =
+* 1.0 RC1 General maintenance, fixing up look-and-feel of admin side. Putting together companion theme.
 
-= 2.6 =
-* 2.6b	Changed handling of plugin options so that they are compatible with Wordpress 2.8 and higher. They are now stored in one entry in the options table instead of being spread out over multiple entries. Moved Manga+Press options page to Settings, Uninstall to Plugins, and Post New Comic to Posts. Removed /admin, /css, /js as they were no longer necessary for the plugin to function.
-* 2.6	Fixed bugs that were present in 2.5. Manga+Press options page now located under Settings, Post New Comic page has been moved to Posts and Uninstall Manga+Press is located under Plugins.
-* 2.6.1	Corrected Static page issue. Also changed mpp_filter_latest_comicpage() so that Post title is included in output.
+* 1.0 RC2 Modified add_comic(), add_footer_info()
+
+* 1.0 RC2.5	Found a major bug involving directory/file permissions. Has been corrected, but I'm keeping my eye on this one for future reference. See website for a fix.
+
 
 == Installation ==
 
