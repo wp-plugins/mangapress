@@ -4,13 +4,17 @@ Donate link: http://manga-press.silent-shadow.net/
 Tags: webcomics, online comics
 Requires at least: 2.8
 Tested up to: 2.9.1
-Stable tag: 2.6.2
+Stable tag: 2.6.3
 
 Manga+Press is a webcomic managment system for Wordpress.
 
 == Description ==
 
 Manga+Press is a webcomic managment system for Wordpress. Manga+Press uses Wordpress's posts, pages and categories to help you keep track of your comic posts. Manga+Press also includes its own custom template tags to help make creating themes easier.
+
+= Update Notice =
+
+Please update to 2.6.3 immediately! 2.6.2 and older uses an older version of TimThumb, which may not be secure. 
 
 = New in 2.6.2 =
 
