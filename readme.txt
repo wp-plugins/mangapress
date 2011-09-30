@@ -16,11 +16,13 @@ Manga+Press is a webcomic managment system for Wordpress. Manga+Press uses Wordp
 
 Please update to 2.6.3 immediately! 2.6.2 and older uses an older version of TimThumb, which may not be secure. 
 
-= New in 2.6.2 =
+= New in 2.6.3 =
 
-* Improved multi-language support. Spanish currently supported. POT file included for other translators to use.
+* Security update. Updated TimThumb to the newest version.
 
 = Current Features: =
+
+* Improved multi-language support. Spanish currently supported. POT file included for other translators to use.
 
 * Automatic Options:
 
