@@ -423,3 +423,4 @@ function mpp_comic_version()
 {
     echo MP_VERSION;
 }
+?>

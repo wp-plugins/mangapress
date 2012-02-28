@@ -259,3 +259,4 @@ class MangaPress_Posts extends ComicPostType
 
     }
 }
+?>

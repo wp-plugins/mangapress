@@ -1,11 +1,11 @@
 <?php
-include('form/Element.php');
-include('form/Element/Text.php');
-include('form/Element/Textarea.php');
-include('form/Element/Select.php');
-include('form/Element/Radio.php');
-include('form/Element/Checkbox.php');
-include('form/Element/Button.php');
+include('Form/Element.php');
+include('Form/Element/Text.php');
+include('Form/Element/Textarea.php');
+include('Form/Element/Select.php');
+include('Form/Element/Radio.php');
+include('Form/Element/Checkbox.php');
+include('Form/Element/Button.php');
 
 class Form
 {
@@ -78,4 +78,4 @@ class Form
         return $form;
     }
 }
-
+?>

@@ -257,3 +257,4 @@ class PostType extends FrameWork_Helper
         return $template;
     }
 }
+?>

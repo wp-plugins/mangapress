@@ -49,3 +49,4 @@ class Textarea extends Element
     }
 
 }
+?>

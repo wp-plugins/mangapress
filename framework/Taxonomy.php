@@ -84,3 +84,4 @@ class Taxonomy extends FrameWork_Helper
         return $this;
     }
 }
+?>

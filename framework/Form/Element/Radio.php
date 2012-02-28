@@ -7,3 +7,4 @@ class Radio extends Element
         return __CLASS__;
     }
 }
+?>

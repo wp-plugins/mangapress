@@ -326,3 +326,4 @@ abstract class Options extends FrameWork_Helper
 
 }
 
+?>

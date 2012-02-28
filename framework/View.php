@@ -242,3 +242,4 @@ class View extends ViewHelper
     }
     
 }
+?>

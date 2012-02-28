@@ -261,3 +261,4 @@ function mangapress_comic_navigation(WP_Query $query = null, $args = array(), $e
     }
 
 }
+?>

@@ -31,3 +31,4 @@ class Text extends Element
     }
 }
 
+?>

@@ -42,3 +42,4 @@ class Select extends Element
         return $this->options;
     }
 }
+?>

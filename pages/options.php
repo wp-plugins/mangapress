@@ -67,3 +67,4 @@ class View_OptionsPage extends View
     }
 
 }
+?>

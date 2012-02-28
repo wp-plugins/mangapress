@@ -64,3 +64,4 @@ abstract class FrameWork_Helper
     }
     
 }
+?>

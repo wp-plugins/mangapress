@@ -27,16 +27,17 @@ Manga+Press is a webcomic managment system for WordPress. Manga+Press uses WordP
 
 == Changelog ==
 
-= 2.7 Beta =
-* 2.7
+= 2.7 =
+* 2.7 Beta 2
+  * Corrected issue with framework paths which prevented the Manga+Press Options forms from displaying properly.
+  * Added closing PHP tags for servers that have short open tags disabled.
+
+* 2.7 Beta
  * Eliminated "Insert Banner" and Comic Update codes. These features may return in future versions.
  * Added custom taxonomies, and post thumbnail support.
  * Eliminated TimThumb.
 
 = 2.6 =
-* 2.6.3
-  * Updated TimThumb
-  
 * 2.6.2
   * Introduced Spanish language support.
 
@@ -94,6 +95,7 @@ Manga+Press is a webcomic managment system for WordPress. Manga+Press uses WordP
 
 1. screenshot-1.jpg
 2. screenshot-2.jpg
+3. screenshot-3.jpg
 
 == Credits ==
 
