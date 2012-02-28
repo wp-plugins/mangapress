@@ -74,6 +74,9 @@ Manga+Press is a webcomic managment system for WordPress. Manga+Press uses WordP
 * 1.0 RC1
   * General maintenance, fixing up look-and-feel of admin side. Putting together companion theme.
 
+== Upgrade Notice ==
+= 2.7 Beta 2 =
+Fixes a problem with the Manga+Press Options page. A path issue in the framework may prevent option fields from displaying properly.
 
 == Installation ==
 
