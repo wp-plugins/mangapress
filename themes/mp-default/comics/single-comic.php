@@ -24,13 +24,15 @@ get_header(); ?>
                 </header>
                 
                 <div class="entry-content">
-                    <?php the_content(); ?>
+                    <?php mangapress_comic_navigation(); ?>                    
                     
                     <?php if (has_post_thumbnail()): ?>
                     <div class="comic">
                         <?php the_post_thumbnail('comic-page'); ?>
                     </div>
                     <?php endif; ?>
+                    
+                    <?php the_content(); ?>
                                         
                 </div>
                 
