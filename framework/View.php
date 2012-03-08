@@ -15,7 +15,14 @@ class View extends ViewHelper
      * @var string|array
      */
     protected $_hook = array();
-
+    
+    /**
+     * Sanitized short-name. Usually post-type or taxonomy.
+     * 
+     * @var string
+     */
+    protected $_name = "";
+    
     /**
      * Post-type that is to be used for enqueuing. Can be
      * an array for multiple post-types
@@ -133,7 +140,7 @@ class View extends ViewHelper
 
     public function set_ver($ver)
     {
-        $this->_ver = $vew;
+        $this->_ver = $ver;
         
         return $this;
     }
