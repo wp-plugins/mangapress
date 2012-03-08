@@ -74,7 +74,7 @@ class View_OptionsPage extends View
     {
         $tabs = array_keys($this->get_settings_page_tabs());
 
-        if (in_array($_GET['tab'], $tabs)) {
+        if (isset($_GET['tab']) && in_array($_GET['tab'], $tabs)) {
             return $_GET['tab'];
         } else {
             return 'basic';

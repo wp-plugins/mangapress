@@ -116,7 +116,7 @@ class Element
     {
         $this->_description = $description;
 
-        return this;
+        return $this;
     }
 
     public function get_description()

@@ -131,16 +131,16 @@ function mangapress_comic_navigation(WP_Query $query = null, $args = array(), $e
 
             $current_page = $post->ID; // use post ID this time.
 
-            $next_page = is_null($next_post->ID)
+            $next_page = !isset($next_post->ID)
                        ? $current_page : $next_post->ID;
 
-            $prev_page = is_null($prev_post->ID)
+            $prev_page = !isset($prev_post->ID)
                        ? $current_page : $prev_post->ID;
 
-            $last      = is_null($last_post[0]->ID)
+            $last      = !isset($last_post[0]->ID)
                        ? $current_page : $last_post[0]->ID;
 
-            $first     = is_null($first_post[0]->ID)
+            $first     = !isset($first_post[0]->ID)
                        ? $current_page : $first_post[0]->ID;
 
             $first_url = get_permalink($first);
@@ -173,7 +173,6 @@ function mangapress_comic_navigation(WP_Query $query = null, $args = array(), $e
         // we'll use WordPress's paging system to generate the required navigation
         $first     = $query->max_num_pages; // last is most recent
         $last      = (float)1;
-        //$num_pages = $query->max_num_pages; // not used
 
         //
         // Current page will help us determine the previous and next pages

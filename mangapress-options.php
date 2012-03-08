@@ -324,7 +324,7 @@ class MangaPress_Options extends Options
 
             echo new $class(array(
                 'attributes'  => $attributes,
-                'description' => $option['description'],
+                'description' => isset($option['description']) ? $option['description'] : '',
                 'default'     => isset($option['value']) ? $option['value'] : $option['default'],
                 'validation'  => $option['valid']
             ));
@@ -350,7 +350,7 @@ class MangaPress_Options extends Options
                 'id'    => $option['id'],
                 'value' => $value,
             ),
-            'description' => $option['description'],
+            'description' => isset($option['description']) ? $option['description'] : '',
             'default'     => $options,
             'validation'  => $option['valid']
         ));

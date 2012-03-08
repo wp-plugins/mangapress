@@ -17,6 +17,7 @@ class Text extends Element
         }
 
         $desc = $this->get_description();
+        $description = "";
         if ($desc) {
             $description = "<span class=\"description\">{$desc}</span>";
         }

@@ -70,7 +70,7 @@ abstract class Options extends FrameWork_Helper
     public function options_init()
     {
 
-        if (DOING_AJAX && defined('DOING_AJAX'))
+        if (defined('DOING_AJAX') && DOING_AJAX)
             return;
         
         /*
