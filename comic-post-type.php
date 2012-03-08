@@ -122,8 +122,8 @@ class ComicPostType extends PostType
         add_meta_box(
             'comic-image',
             __('Comic Image', MP_DOMAIN),
-            array(&$this, 'comic_meta_box_cb'), 
-            &$this->_name,
+            array($this, 'comic_meta_box_cb'), 
+            $this->_name,
             'normal',
             'high'
         );

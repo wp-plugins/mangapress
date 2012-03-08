@@ -13,6 +13,21 @@
  */
 class View_OptionsPage extends View
 {
+    public function __construct($options = null)
+    {
+        parent::__construct($options);
+        
+        $options = add_options_page(
+            __("Manga+Press Options", MP_DOMAIN),
+            __("Manga+Press Options", MP_DOMAIN),
+            'manage_options',
+            'mangapress-options-page',
+            array($this, 'page')
+        );
+        
+        $this->set_hook($options);
+    }
+    
     public function page()
     {
         include_once 'scripts/page.options.php';

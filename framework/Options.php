@@ -56,9 +56,9 @@ abstract class Options extends FrameWork_Helper
             $this->set_options($args);
         }
 
-        add_action("{$name}_option_fields", array(&$this, 'set_options_field'), 10, 1);
-        add_action("{$name}_option_section", array(&$this, 'set_section'), 10, 1);
-        add_action('admin_init', array(&$this, 'options_init'));
+        add_action("{$name}_option_fields", array($this, 'set_options_field'), 10, 1);
+        add_action("{$name}_option_section", array($this, 'set_section'), 10, 1);
+        add_action('admin_init', array($this, 'options_init'));
 
     }
 
@@ -85,7 +85,7 @@ abstract class Options extends FrameWork_Helper
         register_setting(
             $this->_options_group,
             $this->_options_group,
-            array(&$this, 'sanitize_options')
+            array($this, 'sanitize_options')
         );
 
         $sections = $this->get_sections();
@@ -93,7 +93,7 @@ abstract class Options extends FrameWork_Helper
             add_settings_section(
                 "{$this->_options_group}-{$section_name}",
                 $data['title'],
-                array(&$this, 'settings_section_cb'),
+                array($this, 'settings_section_cb'),
                 "{$this->_options_group}-{$section_name}"
             );
         }

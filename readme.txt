@@ -28,6 +28,9 @@ Manga+Press is a webcomic managment system for WordPress. Manga+Press uses WordP
 == Changelog ==
 
 = 2.7 =
+* 2.7 Beta 3
+  * Fixed missing template issues. Fixed issues with "Use theme template" settings.
+
 * 2.7 Beta 2
   * Corrected issue with framework paths which prevented the Manga+Press Options forms from displaying properly.
   * Added closing PHP tags for servers that have short open tags disabled.
@@ -75,6 +78,9 @@ Manga+Press is a webcomic managment system for WordPress. Manga+Press uses WordP
   * General maintenance, fixing up look-and-feel of admin side. Putting together companion theme.
 
 == Upgrade Notice ==
+= 2.7 Beta 3 =
+Updates processing for templates.
+
 = 2.7 Beta 2 =
 Fixes a problem with the Manga+Press Options page. A path issue in the framework may prevent option fields from displaying properly.
 

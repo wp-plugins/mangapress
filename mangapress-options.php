@@ -51,20 +51,11 @@ class MangaPress_Options extends Options
 
     public function admin_init()
     {
-        $options = add_options_page(
-            __("Manga+Press Options", MP_DOMAIN),
-            __("Manga+Press Options", MP_DOMAIN),
-            'manage_options',
-            'mangapress-options-page',
-            array(&$this->_view, 'page')
-        );
-
         $this->set_view(
             new View_OptionsPage(
                 array(
                     'path'       => MP_URLPATH, // plugin path
                     'post_type'  => null,
-                    'hook'       => $options,
                     'js_scripts' => array(
                         'syntax-highlighter',
                         'syntax-highlighter-cssbrush'
@@ -76,7 +67,7 @@ class MangaPress_Options extends Options
                 )
             )
         );
-
+        
     }
 
     public function set_view(View_OptionsPage $view)
@@ -114,7 +105,7 @@ class MangaPress_Options extends Options
                     ),
                     'valid' => 'array',
                     'default' => 'post_date',
-                    'callback' => array(&$this, 'settings_field_cb'),
+                    'callback' => array($this, 'settings_field_cb'),
                 ),
                 'group_comics'      => array( // New options in 3.0
                     'id'    => 'group-comics',
@@ -123,7 +114,7 @@ class MangaPress_Options extends Options
                     'valid' => 'boolean',
                     'description' => __('Group comics by category.', MP_DOMAIN),
                     'default' => 1,
-                    'callback' => array(&$this, 'settings_field_cb'),
+                    'callback' => array($this, 'settings_field_cb'),
                 ),
                 'latestcomic_page'  => array(
                     'id'    => 'latest-comic-page',
@@ -134,7 +125,7 @@ class MangaPress_Options extends Options
                     ),
                     'valid' => 'array',
                     'default'  => 1,
-                    'callback' => array(&$this, 'ft_basic_page_dropdowns_cb'),
+                    'callback' => array($this, 'ft_basic_page_dropdowns_cb'),
                 ),
                 'latestcomic_page_template' => array(  // New option in 3.0
                     'id'    => 'latestcomic-page-template',
@@ -143,7 +134,7 @@ class MangaPress_Options extends Options
                     'description' => 'Use theme template for Latest Comic Page.',
                     'valid'       => 'boolean',
                     'default'     => 1,
-                    'callback' => array(&$this, 'settings_field_cb'),
+                    'callback' => array($this, 'settings_field_cb'),
                 ),                
                 'comicarchive_page' => array(
                     'id'    => 'archive-page',
@@ -154,7 +145,7 @@ class MangaPress_Options extends Options
                     ),
                     'valid' => 'array',
                     'default' => 1,
-                    'callback' => array(&$this, 'ft_basic_page_dropdowns_cb'),
+                    'callback' => array($this, 'ft_basic_page_dropdowns_cb'),
                 ),
                 'comicarchive_page_template' => array(  // New option in 3.0
                     'id'    => 'comicarchive-page-template',
@@ -163,7 +154,7 @@ class MangaPress_Options extends Options
                     'description' => 'Use theme template for Comic Archive Page.',
                     'valid'       => 'boolean',
                     'default'     => 1,
-                    'callback' => array(&$this, 'settings_field_cb'),
+                    'callback' => array($this, 'settings_field_cb'),
                 ),                
             ),
             'comic_page' => array(
@@ -173,7 +164,7 @@ class MangaPress_Options extends Options
                     'title' => __('Banner Width', MP_DOMAIN),
                     'valid' => '/[0-9]/',
                     'default' => 450,
-                    'callback' => array(&$this, 'settings_field_cb'),
+                    'callback' => array($this, 'settings_field_cb'),
                 ),
                 'banner_height'       =>  array(
                     'id'    => 'banner-height',
@@ -181,7 +172,7 @@ class MangaPress_Options extends Options
                     'title'   => __('Banner Height', MP_DOMAIN),
                     'valid'   => '/[0-9]/',
                     'default' => 100,
-                    'callback' => array(&$this, 'settings_field_cb'),
+                    'callback' => array($this, 'settings_field_cb'),
                 ),
                 'comic_post_count'    =>  array( // New option in 3.0
                     'id'    => 'number-posts',
@@ -190,7 +181,7 @@ class MangaPress_Options extends Options
                     'description' => 'Overrides values set in Reading Settings.',
                     'valid' => '/[0-9]/',
                     'default' => 10,
-                    'callback' => array(&$this, 'settings_field_cb'),
+                    'callback' => array($this, 'settings_field_cb'),
                 ),
                 'generate_comic_page' => array(  // New option in 3.0
                     'id'    => 'generate-page',
@@ -199,7 +190,7 @@ class MangaPress_Options extends Options
                     'description' => 'Generate a comic page based on values below.',
                     'valid'       => 'boolean',
                     'default'     => 1,
-                    'callback' => array(&$this, 'settings_field_cb'),
+                    'callback' => array($this, 'settings_field_cb'),
                 ),
                 'comic_page_width'    => array( // New option in 3.0
                     'id'    => 'page-width',
@@ -207,7 +198,7 @@ class MangaPress_Options extends Options
                     'title'   => __('Comic Page Width', MP_DOMAIN),
                     'valid'   => '/[0-9]/',
                     'default' => 600,
-                    'callback' => array(&$this, 'settings_field_cb'),
+                    'callback' => array($this, 'settings_field_cb'),
                 ),
                 'comic_page_height'   => array( // New option in 3.0
                     'id'    => 'page-height',
@@ -215,7 +206,7 @@ class MangaPress_Options extends Options
                     'title'   => __('Comic Page Height', MP_DOMAIN),
                     'valid'   => '/[0-9]/',
                     'default' => 1000,
-                    'callback' => array(&$this, 'settings_field_cb'),
+                    'callback' => array($this, 'settings_field_cb'),
                 ),
             ),
             'nav' => array(
@@ -226,7 +217,7 @@ class MangaPress_Options extends Options
                     'type'    => 'checkbox',
                     'valid'   => 'boolean',
                     'default' => 1,
-                    'callback' => array(&$this, 'settings_field_cb'),
+                    'callback' => array($this, 'settings_field_cb'),
                 ),
                 'nav_css'    => array(
                     'id'     => 'navigation-css',
@@ -239,11 +230,11 @@ class MangaPress_Options extends Options
                     ),
                     'valid'   => 'array',
                     'default' => 'custom_css',
-                    'callback' => array(&$this, 'settings_field_cb'),
+                    'callback' => array($this, 'settings_field_cb'),
                 ),
                 'display_css' => array(
                     'id'       => 'display',
-                    'callback' => array(&$this, 'ft_navigation_css_display_cb'),
+                    'callback' => array($this, 'ft_navigation_css_display_cb'),
                 )
             ),
         );
@@ -270,7 +261,10 @@ class MangaPress_Options extends Options
                 'description' => __(
                     'Handles image sizing options for comic pages. '
                     . 'Thumbnail support may need to be enabled for some '
-                    . 'features to work properly.',
+                    . 'features to work properly. '
+                    . 'If page- or thumbnail sizes are changed, then a plugin '
+                    . 'such as Regenerate Thumbnails may be used to create '
+                    . 'the new thumbnails.',
                     MP_DOMAIN
                 ),
             ),
@@ -292,8 +286,8 @@ class MangaPress_Options extends Options
 
     public function output_settings_fields()
     {
-
-        $field_sections = $this->options_fields();
+        
+        $field_sections = apply_filters('mangapress_option_fields', $this->options_fields());
         $current_tab    = $this->get_view()->get_current_tab();
         $fields         = $field_sections[$current_tab];
 
@@ -322,12 +316,14 @@ class MangaPress_Options extends Options
         $value = $mp_options[$option['section']][$option['name']];
 
         if ($class !== ""){
+            $attributes  = array(
+                'name'  => "mangapress_options[{$option['section']}][{$option['name']}]",
+                'id'    => $option['id'],
+                'value' => $value,
+            );                                
+
             echo new $class(array(
-                'attributes'  => array(
-                    'name'  => "mangapress_options[{$option['section']}][{$option['name']}]",
-                    'id'    => $option['id'],
-                    'value' => $value,
-                ),
+                'attributes'  => $attributes,
                 'description' => $option['description'],
                 'default'     => isset($option['value']) ? $option['value'] : $option['default'],
                 'validation'  => $option['valid']
@@ -417,7 +413,7 @@ ul.comic-nav li:before{ content: ""; }
      */
     public function settings_section_cb($section)
     {
-        $options = $this->options_sections();
+        $options = apply_filters('mangapress_option_section', $this->options_sections());
 
         $current = (substr($section['id'], strpos($section['id'], '-') + 1));
 

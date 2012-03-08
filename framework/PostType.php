@@ -73,8 +73,8 @@ class PostType extends FrameWork_Helper
                 
         register_post_type($this->_name, $this->_args);
                 
-        add_action('generate_rewrite_rules', array(&$this, 'rewrite'));
-        add_action('template_include', array(&$this, 'template_include'));
+        add_action('generate_rewrite_rules', array($this, 'rewrite'));
+        add_action('template_include', array($this, 'template_include'));
         
     }
 
@@ -123,7 +123,7 @@ class PostType extends FrameWork_Helper
                 //'map_meta_cap'         => $map_meta_cap,
                 'hierarchical'         => $hierarchical,
                 'supports'             => $supports,
-                'register_meta_box_cb' => array(&$this, 'meta_box_cb'),
+                'register_meta_box_cb' => array($this, 'meta_box_cb'),
                 'taxonomies'           => $taxonomies,
                 'permalink_epmask'     => EP_PERMALINK,
                 'has_archive'          => $has_archive,

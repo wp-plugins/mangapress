@@ -87,9 +87,9 @@ class View extends ViewHelper
             'screen'
         );                    
         
-        add_action('admin_enqueue_scripts', array(&$this, 'enqueue_scripts'));
-        add_action('admin_enqueue_scripts', array(&$this, 'enqueue_styles'));
-        add_action('admin_enqueue_scripts', array(&$this, 'enqueue_default_styles'));
+        add_action('admin_enqueue_scripts', array($this, 'enqueue_scripts'));
+        add_action('admin_enqueue_scripts', array($this, 'enqueue_styles'));
+        add_action('admin_enqueue_scripts', array($this, 'enqueue_default_styles'));
 
     }
 
