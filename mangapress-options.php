@@ -1,11 +1,16 @@
 <?php
-
+/**
+ * @package Manga_Press
+ * @version $Id$
+ * @author Jessica Green <jgreen@psy-dreamer.com>
+ */
 require_once 'pages/options.php';
 
 /**
- * Description of mangapress-options
- *
- * @author Jessica
+ * MangaPress Options class
+ * @package MangaPress
+ * @subpackage MangaPress_Options
+ * @author Jessica Green <jgreen@psy-dreamer.com>
  */
 class MangaPress_Options extends Options
 {
@@ -16,7 +21,9 @@ class MangaPress_Options extends Options
      */
     protected $_view;
 
-
+    /**
+     * Constructor
+     */
     public function __construct()
     {
         parent::__construct(
@@ -48,7 +55,12 @@ class MangaPress_Options extends Options
 
         add_action('admin_menu', array($this, 'admin_init'));
     }
-
+    
+    /**
+     * Hook method for admin_menu.
+     * 
+     * @return void 
+     */
     public function admin_init()
     {
         $this->set_view(
@@ -69,14 +81,25 @@ class MangaPress_Options extends Options
         );
         
     }
-
+    
+    /**
+     * Sets the current view object
+     * 
+     * @param View_OptionsPage $view Sets the view object
+     * @return \MangaPress_Options 
+     */
     public function set_view(View_OptionsPage $view)
     {
         $this->_view = $view;
 
         return $this;
     }
-
+    
+    /**
+     * Retrieve the current view object
+     * 
+     * @return \View_OptionsPage|\WP_Error 
+     */
     public function get_view()
     {
         if (!($this->_view instanceof View)) {
@@ -85,7 +108,13 @@ class MangaPress_Options extends Options
 
         return $this->_view;
     }
-
+    
+    /**
+     * Helper function for creating default options fields.
+     * 
+     * @param array $options Option fields array.
+     * @return array 
+     */
     public function options_fields($options = array())
     {
         /*
@@ -242,7 +271,13 @@ class MangaPress_Options extends Options
         return $options;
 
     }
-
+    
+    /**
+     * Helper function for setting default options sections.
+     * 
+     * @param array $sections Options sections/tabs
+     * @return array 
+     */
     public function options_sections($sections = array())
     {
         $sections = array(
@@ -283,7 +318,12 @@ class MangaPress_Options extends Options
         return $sections;
 
     }
-
+    
+    /**
+     * Outputs the settings fields
+     * 
+     * @return void 
+     */
     public function output_settings_fields()
     {
         
@@ -305,7 +345,14 @@ class MangaPress_Options extends Options
         }
 
     }
-
+    
+    /**
+     * Call-back for outputting settings fields
+     * 
+     * @global type $mp
+     * @param type $option Current option array
+     * @return void
+     */
     public function settings_field_cb($option)
     {
         global $mp;
@@ -331,6 +378,14 @@ class MangaPress_Options extends Options
         }
     }
 
+    /**
+     * Call-back for outputting settings fields (select drop-downs)
+     * with custom values.
+     * 
+     * @global type $mp
+     * @param type $option Current option array
+     * @return void
+     */
     public function ft_basic_page_dropdowns_cb($option)
     {
         global $mp;
@@ -356,7 +411,14 @@ class MangaPress_Options extends Options
         ));
 
     }
-
+    
+    /**
+     * Call-back for outputting settings fields display box
+     * 
+     * @global type $mp
+     * @param type $option Current option array
+     * @return void
+     */
     public function ft_navigation_css_display_cb($option)
     {
 ?>
@@ -419,7 +481,14 @@ ul.comic-nav li:before{ content: ""; }
 
         echo "<p>{$options[$current]['description']}</p>";
     }
-
+    
+    /**
+     * Sanitizes options before DB commit.
+     * 
+     * @global type $mp
+     * @param type $options Options array
+     * @return type array
+     */
     public function sanitize_options($options)
     {
         global $mp;

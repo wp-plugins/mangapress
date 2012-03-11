@@ -125,7 +125,12 @@ class MangaPress_Install
     {
 
     }
-
+    
+    /**
+     * Returns default options
+     * 
+     * @return array
+     */
     public static function get_default_options()
     {
         return self::$_default_options;

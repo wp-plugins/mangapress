@@ -22,10 +22,11 @@
 /**
  * Handles display for the latest comic page.
  *
- * @global array $mp_options
- * @global object $wp_query
+ * @global object $mp MangaPress bootstrap object
+ * @global object $post WordPress Post
+ * @global array $_wp_additional_image_sizes Array defining thumbnail names and dimensions.
  *
- * @since 2.5
+ * @since 2.7
  * @param string $template
  * @return string
  */
@@ -72,7 +73,7 @@ function mpp_filter_latest_comic($content)
             setup_postdata($post);
 
             ob_start();
-            load_template(MP_ABSPATH . 'templates/latest-comic.php', true);
+            load_template(MP_ABSPATH . 'templates/content/latest-comic.php', true);
             $content = ob_get_contents();
             ob_end_clean();
             
@@ -87,9 +88,10 @@ function mpp_filter_latest_comic($content)
 /**
  * Overrides mpp_filter_latest_comic() with a template.
  *
- * @global array $mp_options
+ * @global object $mp MangaPress bootstrap object
  * @global object $wp_query
  *
+ * @since 2.7
  * @param string $template
  * @return string|void
  */
@@ -134,7 +136,7 @@ function mpp_series_template($template)
         if (isset($object->taxonomy) && $object->taxonomy == 'mangapress_series'){
 
             if ('' == locate_template(array('comics/archives.php'), true)) {
-                load_template(MP_ABSPATH . 'templates/archives.php');
+                return get_archive_template();
             }
 
         } else {
@@ -145,13 +147,13 @@ function mpp_series_template($template)
     }
 }
 /**
- * filter_comic_archivepage()
+ * comic_archivepage()
  *
  *
- * @global object $wp Global WordPress query object.
- * @global array $mp_options Array containing Manga+Press options.
+ * @global object $mp MangaPress bootstrap object
+ * @global object $post WordPress Post
  *
- * @since 2.6
+ * @since 2.7
  * @param string $template
  * @return string|void
  */
@@ -184,16 +186,16 @@ function mpp_comic_archivepage($template)
  * filter_comic_archivepage()
  *
  *
- * @global object $wp Global WordPress query object.
- * @global array $mp_options Array containing Manga+Press options.
+ * @global object $mp MangaPress bootstrap object
+ * @global object $post WordPress Post
  *
  * @since 2.6
- * @param string $template
- * @return string|void
+ * @param string $content Page content (from the_content())
+ * @return string
  */
 function mpp_filter_comic_archivepage($content)
 {
-    global $post, $mp, $_wp_additional_image_sizes;
+    global $post, $mp;
 
     $mp_options = $mp->get_options();
 
@@ -202,7 +204,7 @@ function mpp_filter_comic_archivepage($content)
     } else {
             
         ob_start();
-        load_template(MP_ABSPATH . 'templates/comic-archive.php', true);
+        load_template(MP_ABSPATH . 'templates/content/comic-archive.php', true);
         $content = ob_get_contents();
         ob_end_clean();
 
@@ -247,9 +249,10 @@ function mpp_comic_single_page($template)
     }
 
 }
+
 /**
  * mpp_comic_insert_navigation()
- * Uses a template to create comic navigation.
+ * Inserts navigation on single comic pages when Insert Navigation is enabled.
  *
  * @since 2.5
  *

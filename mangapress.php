@@ -4,7 +4,6 @@
  * @version $Id$
  * @author Jessica Green <jgreen@psy-dreamer.com>
  * 
- * @todo Create fall-back templates
  * @todo Update screenshots
  * @todo Update PHPDoc comments
  */
@@ -12,7 +11,7 @@
  Plugin Name: Manga+Press Comic Manager
  Plugin URI: http://manga-press.jes.gs/
  Description: Turns WordPress into a full-featured Webcomic Manager. Be sure to visit <a href="http://manga-press.jes.gs/">Manga+Press</a> for more info.
- Version: 2.7-beta-3
+ Version: 2.7-RC1-1
  Author: Jessica Green
  Author URI: http://www.jes.gs
 */
@@ -39,7 +38,7 @@ if(preg_match('#' . basename(__FILE__) . '#', $_SERVER['PHP_SELF']))
 $plugin_folder = plugin_basename(dirname(__FILE__));
 
 if (!defined('MP_VERSION'))
-    define('MP_VERSION', '2.7-beta-3');
+    define('MP_VERSION', '2.7-RC1-1');
 
 if (!defined('MP_DB_VERSION'))
     define('MP_DB_VERSION', '1.0');
@@ -82,6 +81,13 @@ register_deactivation_hook( __FILE__, array('MangaPress_Install', 'do_deactivate
 add_action('init', array('MangaPress_Bootstrap', 'init'));
 add_action('setup_theme', array('MangaPress_Bootstrap', 'setup_theme'));
 
+/**
+ * Plugin bootstrap class.
+ * 
+ * @package MangaPress
+ * @subpackage MangaPress_Bootstrap
+ * @author Jess Green <jgreen@psy-dreamer.com>
+ */
 class MangaPress_Bootstrap
 {
 
@@ -94,16 +100,6 @@ class MangaPress_Bootstrap
      */
     protected $_posts;
     
-    /**
-     * Array of templates for Comic Navigation
-     * 
-     * @var array
-     */
-    public static $nav_templates = array(
-        'comics/nav.php',
-        'comic-nav.php',
-    );
-
     /**
      * Static function used to initialize Bootstrap
      *
@@ -228,13 +224,6 @@ class MangaPress_Bootstrap
     {
         self::$_options = maybe_unserialize(get_option('mangapress_options'));
 
-    }
-    
-    public static function set_navigation_templates(array $templates)
-    {
-        self::$nav_templates = array_merge(self::$nav_templates, $templates);
-        
-        return self::$nav_templates;
     }
 
     /**

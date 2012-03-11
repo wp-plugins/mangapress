@@ -79,7 +79,13 @@ class ComicPostType extends PostType
                 ->init()
         ;
     }
-
+    
+    /**
+     * Sets post-type arguments
+     * 
+     * @param type $args
+     * @return array|PostType
+     */
     public function set_arguments($args = array()) {
         $args = array(
             'capability_type' => 'post',
@@ -96,7 +102,13 @@ class ComicPostType extends PostType
         return parent::set_arguments($args);
     }
 
-    public function get_taxonomies() {
+    /**
+     * Registers and sets taxonomies for post-type
+     * 
+     * @return array 
+     */
+    public function get_taxonomies()
+    {
         /*
          * Assemble our taxonomies first
          */
@@ -117,6 +129,11 @@ class ComicPostType extends PostType
         return array($series_tax->name);
     }
     
+    /**
+     * Meta box call-back function.
+     * 
+     * @return void 
+     */
     public function meta_box_cb()
     {
         add_meta_box(
@@ -136,6 +153,11 @@ class ComicPostType extends PostType
         
     }
     
+    /**
+     * Retrieves post-type slug
+     * 
+     * @return string
+     */
     public function get_name() {
         return $this->_name;
     }

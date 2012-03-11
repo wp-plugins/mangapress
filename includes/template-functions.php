@@ -48,9 +48,12 @@ if (!function_exists('is_comic')) {
 if (!function_exists('is_comic_page')) {
     function is_comic_page()
     {
-        global $mp_options, $wp_query;
-
-        return ($wp_query->is_page && ($wp_query->queried_object_id == $mp_options['latestcomic_page']));
+        global $mp, $wp_query;
+        
+        $mp_options = $mp->get_options(); 
+        $query      = $wp_query->get_queried_object();
+        
+        return ($wp_query->is_page && ($query->post_name == $mp_options['basic']['latestcomic_page']));
 
     }
 }
@@ -62,17 +65,20 @@ if (!function_exists('is_comic_page')) {
  * @return bool
  */
 if (!function_exists('is_comic_archive_page')) {
-function is_comic_archive_page()
-{
-    global $mp_options, $wp_query;
+    function is_comic_archive_page()
+    {
+        global $mp, $wp_query;
 
-    $is_comic_archive_page
-        = ($wp_query->is_page && ($wp_query->queried_object_id
-                                    == $mp_options['comic_archive_page']));
+        $mp_options = $mp->get_options(); 
+        $query      = $wp_query->get_queried_object();
 
-    return $is_comic_archive_page;
+        $is_comic_archive_page
+            = ($wp_query->is_page && ($query->post_name
+                                        == $mp_options['basic']['comicarchive_page']));
 
-}
+        return $is_comic_archive_page;
+
+    }
 }
 
 /**
