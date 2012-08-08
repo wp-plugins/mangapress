@@ -3,7 +3,7 @@ Contributors: Jess Green
 Donate link: http://manga-press.jes.gs/
 Tags: webcomics, online comics
 Requires at least: 3.3
-Tested up to: 3.3.1
+Tested up to: 3.4.1
 Stable tag: 2.7.1
 
 Manga+Press is a webcomic management system for WordPress.
