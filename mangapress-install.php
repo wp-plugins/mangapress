@@ -125,7 +125,8 @@ class MangaPress_Install
      */
     public static function do_upgrade()
     {
-
+        update_option('mangapress_ver', MP_VERSION);
+        delete_option( 'mangapress_upgrade' );
     }
     
     /**
