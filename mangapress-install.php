@@ -34,10 +34,12 @@ class MangaPress_Install
      */
     protected static $_default_options =  array(
             'basic' => array(
-                'order_by'            => 'post_date',
-                'group_comics'        => 0,
-                'latestcomic_page'    => 0,
-                'comicarchive_page'   => 0,
+                'order_by'                   => 'post_date',
+                'group_comics'               => 0,
+                'latestcomic_page'           => 0,
+                'comicarchive_page'          => 0,
+                'latestcomic_page_template'  => 0,
+                'comicarchive_page_template' => 0,				
             ),
             'comic_page' => array(
                 'make_thumb'          => 0,
