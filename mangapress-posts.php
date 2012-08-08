@@ -129,7 +129,7 @@ class MangaPress_Posts extends ComicPostType
         if (strpos(get_post_mime_type($post->ID), 'image') === false)
             return $form_fields;
 
-        if ($_GET['post_type'] !== 'mangapress_comic')
+        if (!isset($_GET['post_type']) || $_GET['post_type'] !== 'mangapress_comic')
             return $form_fields;
         
         if (intval($_GET['post_id']) == 0)
