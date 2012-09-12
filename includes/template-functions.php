@@ -114,83 +114,47 @@ function mangapress_comic_navigation(WP_Query $query = null, $args = array(), $e
     $args = apply_filters('mangapress_comic_navigation_args', $args);
     $args = (object) $args;
 
-
-
     if (is_null($query)) {
         global $wp_query;
-
+        
         $query = $wp_query;
+    }
+    
+    $is_comic = ($query->post->post_type == "mangapress_comic");
 
-        $is_comic = ($query->post->post_type == "mangapress_comic");
+    if ($query->is_post_type_archive && $is_comic) {
+        $query->set('posts_per_page', '1');
+    } elseif ($query->is_single && $is_comic) {
+        global $post;
 
-        if ($query->is_post_type_archive && $is_comic) {
-            $query->set('posts_per_page', '1');
-        } elseif ($query->is_single && $is_comic) {
-            global $post;
+        $group = (bool)$mp_options['basic']['group_comics'];
 
-            $group = (bool)$mp_options['basic']['group_comics'];
+        $next_post  = mpp_get_adjacent_comic($group, 'mangapress_series', null, false);
+        $prev_post  = mpp_get_adjacent_comic($group, 'mangapress_series', null, true);
+        $last_post  = mpp_get_boundary_comic($group, 'mangapress_series', null, false);
+        $first_post = mpp_get_boundary_comic($group, 'mangapress_series', null, true);
 
-            $next_post  = mpp_get_adjacent_comic($group, 'mangapress_series', null, false);
-            $prev_post  = mpp_get_adjacent_comic($group, 'mangapress_series', null, true);
-            $last_post  = mpp_get_boundary_comic($group, 'mangapress_series', null, false);
-            $first_post = mpp_get_boundary_comic($group, 'mangapress_series', null, true);
+        $current_page = $post->ID; // use post ID this time.
+//        var_dump($first_post); die();
+        $next_page = !isset($next_post->ID)
+                   ? $current_page : $next_post->ID;
 
-            $current_page = $post->ID; // use post ID this time.
+        $prev_page = !isset($prev_post->ID)
+                   ? $current_page : $prev_post->ID;
 
-            $next_page = !isset($next_post->ID)
-                       ? $current_page : $next_post->ID;
+        $last      = !isset($last_post[0]->ID)
+                   ? $current_page : $last_post[0]->ID;
 
-            $prev_page = !isset($prev_post->ID)
-                       ? $current_page : $prev_post->ID;
+        $first     = !isset($first_post[0]->ID)
+                   ? $current_page : $first_post[0]->ID;
 
-            $last      = !isset($last_post[0]->ID)
-                       ? $current_page : $last_post[0]->ID;
+        $first_url = get_permalink($first);
+        $last_url  = get_permalink($last);
+        $next_url  = get_permalink($next_page);
+        $prev_url  = get_permalink($prev_page);
 
-            $first     = !isset($first_post[0]->ID)
-                       ? $current_page : $first_post[0]->ID;
-
-            $first_url = get_permalink($first);
-            $last_url  = get_permalink($last);
-            $next_url  = get_permalink($next_page);
-            $prev_url  = get_permalink($prev_page);
-
-        } else {
-            return false;
-        }
     } else {
-
-        if ($mp_options['group_comics']) {
-            $term = wp_get_object_terms($query->post->ID, 'series');
-            $query->set(
-                'tax_query',
-                array(
-                    'relation' => 'AND',
-                    array(
-                        'taxonomy'   => 'series',
-                        'field'      => 'slug',
-                        'terms'      => $term[0]->slug,
-                    ),
-                )
-            );
-
-            $query->get_posts();
-        }
-
-        // we'll use WordPress's paging system to generate the required navigation
-        $first     = $query->max_num_pages; // last is most recent
-        $last      = (float)1;
-
-        //
-        // Current page will help us determine the previous and next pages
-        $paged        = $query->get('paged');
-        $current_page = ($paged == 0) ? $last : $paged;
-        $next_page    = ($current_page == $last) ? $last : $current_page - 1;
-        $prev_page    = ($current_page == $first) ? $first : $current_page + 1;
-
-        $first_url = get_pagenum_link($first);
-        $last_url = get_pagenum_link($last);
-        $next_url = get_pagenum_link($next_page);
-        $prev_url = get_pagenum_link($prev_page);
+        return false;
     }
 
     $show_container = false;

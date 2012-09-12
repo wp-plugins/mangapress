@@ -1,7 +1,7 @@
 <?php
-global $thumbnail_size;
+global $thumbnail_size, $single_comic_query;
 
-mangapress_comic_navigation(); ?>
+mangapress_comic_navigation($single_comic_query); ?>
 
 <h2><?php the_title(); ?></h2>
 

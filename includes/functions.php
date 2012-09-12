@@ -1,21 +1,16 @@
 <?php
 /**
+ * Manga+Press plugin Functions
+ * This is where the actual work gets done...
+ * 
  * @package Manga_Press
+ * @subpackage Core_Functions
  * @version $Id$
  * @author Jessica Green <jgreen@psy-dreamer.com>
  */
-/**
- * @package Manga_Press
- * @subpackage Core_Functions
- * @since 0.1b
- *
- * Manga+Press plugin Functions
- * This is where the actual work gets done...
- *
- */
 
 
-/**
+/*------------------------------------------------------------------------------
  * Manga+Press Hook Functions
  */
 
@@ -38,51 +33,64 @@ function mpp_filter_latest_comic($content)
 
     if (!($post->post_name == $mp_options['basic']['latestcomic_page'])) {
         return $content;
-    } else {
-        global $latest_comic_query;
-
-        $latest_comic_query = new WP_Query(array(
-            'numberposts' => 1,
-            'orderby'     => 'date',
-            'post_type'   => 'mangapress_comic',
-            'post_status' => 'publish',
-        ));
-
-
-        if (!isset($latest_comic_query->posts[0])) {
-            // error template
-        } else {
-            global $thumbnail_size, $wp_query;
-            
-            $old_query = $wp_query; // let's save it
-            
-            $wp_query = new WP_Query(array(
-                'name'      => $latest_comic_query->posts[0]->post_name,
-                'post_type' => 'mangapress_comic',
-            ));
-            
-            $wp_query->set('is_single', true);
-            
-            $post = $wp_query->posts[0];
-            
-            $thumbnail_size = 'comic-page';
-            if (!isset($_wp_additional_image_sizes['comic-page'])) {
-                $thumbnail_size = 'large';
-            }
-
-            setup_postdata($post);
-
-            ob_start();
-            load_template(MP_ABSPATH . 'templates/content/latest-comic.php', true);
-            $content = ob_get_contents();
-            ob_end_clean();
-            
-            $wp_query = $old_query; // and we switch them back
-            
-            return apply_filters('the_latest_comic_content', $content);
+    } else {        
+        global $thumbnail_size, $single_comic_query;
+        
+        $single_comic_query = mpp_get_latest_comic();
+        
+        if ($single_comic_query instanceof WP_Error){
+            return apply_filters(
+                'the_latest_comic_content_error',
+                '<p class="error">No Latest Comic was found.</p>'
+            );
+        }
+        
+        $thumbnail_size = 'comic-page';
+        if (!isset($_wp_additional_image_sizes['comic-page'])) {
+            $thumbnail_size = 'large';
         }
 
+        $post = $single_comic_query->posts[0];
+
+        setup_postdata($post);
+
+        ob_start();
+        load_template(MP_ABSPATH . 'templates/content/latest-comic.php', true);
+        $content = ob_get_contents();
+        ob_end_clean();
+
+        return apply_filters('the_latest_comic_content', $content);
+
     }
+}
+
+/**
+ * Retrieves the most recent comic
+ * 
+ * @since 2.7.2
+ * @return \WP_Query
+ */
+function mpp_get_latest_comic()
+{
+    global $wpdb;
+    
+    $sql = "SELECT post_name FROM {$wpdb->posts} " 
+         . "WHERE post_type=\"mangapress_comic\" " 
+         . "AND post_status=\"publish\" " 
+         . "ORDER BY post_date DESC LIMIT 1";
+
+    $post_name = $wpdb->get_var($sql);
+    
+    if (!$post_name) {
+        $post_name = 'no-comic-found';
+    }
+    
+    $single_comic_query = new WP_Query(array(
+        'name'      => $post_name,
+        'post_type' => 'mangapress_comic',
+    ));
+
+    return $single_comic_query;
 }
 
 /**
@@ -105,9 +113,13 @@ function mpp_latest_comic_page($template)
     if (isset($object->post_name) && $object->post_name == $mp_options['basic']['latestcomic_page']) {
 
         $latest_template = apply_filters('template_include_latest_comic', array('comics/latest-comic.php'));
+        $template = locate_template($latest_template); 
+
         // if template can't be found, then look for query defaults...
-        if ('' == locate_template($latest_template, true)) {
+        if (!$template) { 
             return get_page_template();
+        } else {
+            return $template;
         }
 
     } else {
@@ -281,7 +293,8 @@ function mpp_comic_insert_navigation($content)
  * Handles looking for previos and next comics. Needed because get_adjacent_post()
  * will only handle category, and not other taxonomies. Addresses issue with
  * get_adjacent_post() from {@link http://core.trac.wordpress.org/ticket/17807 WordPress Trac #17807}
- *
+ * May be deprecated once WordPress Trac #17807 is resolved, possibly in WP 3.5
+ * 
  * @since 2.7
  *
  * @param bool $in_same_cat Optional. Whether returned post should be in same category.
@@ -305,7 +318,7 @@ function mpp_get_adjacent_comic($in_same_cat = false, $taxonomy = 'category', $e
 
     $join = '';
     $posts_in_ex_cats_sql = '';
-    if ( $in_same_cat || !empty($excluded_categories) ) {
+    if ($in_same_cat || !empty($excluded_categories)) {
         $join = " INNER JOIN $wpdb->term_relationships AS tr ON p.ID = tr.object_id INNER JOIN $wpdb->term_taxonomy tt ON tr.term_taxonomy_id = tt.term_taxonomy_id";
 
         if ( $in_same_cat ) {
@@ -355,6 +368,7 @@ function mpp_get_adjacent_comic($in_same_cat = false, $taxonomy = 'category', $e
  * comic posts. Needed because get_boundary_post() will only handle category,
  * and not other taxonomies. Addresses issues with get_boundary_post() in
  * {@link http://core.trac.wordpress.org/ticket/17807 WordPress Trac #17807}
+ * May be deprecated once WordPress Trac #17807 is resolved, possibly in WP 3.5
  *
  * @since 2.7
  *
@@ -369,30 +383,37 @@ function mpp_get_boundary_comic($in_same_cat = false, $taxonomy = 'category', $e
 {
     global $post;
 
-    if ( empty($post) || !is_single() || is_attachment() )
+    if ( empty($post) || is_attachment() )
         return null;
 
     $cat_array = array();
     $excluded_categories = array();
-    if ( !empty($in_same_cat) || !empty($excluded_categories) ) {
-        if ( !empty($in_same_cat) ) {
+    if ($in_same_cat || !empty($excluded_categories)) {
+        if ($in_same_cat) {
             $cat_array = wp_get_object_terms($post->ID, $taxonomy, array('fields' => 'ids'));
         }
-
+        
         if ( !empty($excluded_categories) ) {
             $excluded_categories = array_map('intval', explode(',', $excluded_categories));
 
             if ( !empty($cat_array) )
-                    $excluded_categories = array_diff($excluded_categories, $cat_array);
+                $excluded_categories = array_diff($excluded_categories, $cat_array);
 
             $inverse_cats = array();
             foreach ( $excluded_categories as $excluded_category)
-                    $inverse_cats[] = $excluded_category * -1;
+                $inverse_cats[] = $excluded_category * -1;
             $excluded_categories = $inverse_cats;
         }
     }
-
-    $categories = implode(',', array_merge($cat_array, $excluded_categories) );
+    
+    $cat_array = array_merge($cat_array, $excluded_categories);
+    asort($cat_array);
+    
+    if ($start) {
+        $cat_array = array_reverse($cat_array);
+    }
+    
+    $categories = implode(',',  $cat_array);
     if (!empty($categories)) {
         $tax_query = array(
             array(
@@ -415,7 +436,7 @@ function mpp_get_boundary_comic($in_same_cat = false, $taxonomy = 'category', $e
         'update_post_term_cache' => false,
         'update_post_meta_cache' => false,
     );
-
+    
     return get_posts($post_query);
 }
 
