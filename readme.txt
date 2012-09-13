@@ -93,6 +93,11 @@ Manga+Press is a webcomic managment system for WordPress. Manga+Press uses WordP
      # General maintenance, fixing up look-and-feel of admin side. Putting together companion theme.
 
 == Upgrade Notice ==
+= 2.7.2=
+   # Added Spanish Language support
+   # Fixed issues with comic navigation.
+   # Addressing query-usage on Latest Comic page.
+
 = 2.7 Beta 3 =
 Updates processing for templates.
 
