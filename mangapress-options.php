@@ -283,35 +283,15 @@ class MangaPress_Options extends Options
         $sections = array(
             'basic'      => array(
                 'title'       => __('Basic Options', MP_DOMAIN),
-                'description' => __(
-                    'This section sets the &ldquo;Latest-&rdquo; and '
-                    . '&ldquo;Comic Archive&rdquo; pages, number of comics '
-                    . 'per page, and grouping comics together by category.',
-                    MP_DOMAIN
-                ),
+                'description' => __('This section sets the &ldquo;Latest-&rdquo; and &ldquo;Comic Archive&rdquo; pages, number of comics per page, and grouping comics together by category.', MP_DOMAIN),
             ),
-
             'comic_page' => array(
                 'title'       => __('Comic Page Options', MP_DOMAIN),
-                'description' => __(
-                    'Handles image sizing options for comic pages. '
-                    . 'Thumbnail support may need to be enabled for some '
-                    . 'features to work properly. '
-                    . 'If page- or thumbnail sizes are changed, then a plugin '
-                    . 'such as Regenerate Thumbnails may be used to create '
-                    . 'the new thumbnails.',
-                    MP_DOMAIN
-                ),
+                'description' => __('Handles image sizing options for comic pages. Thumbnail support may need to be enabled for some features to work properly. If page- or thumbnail sizes are changed, then a plugin such as Regenerate Thumbnails may be used to create the new thumbnails.', MP_DOMAIN),
             ),
-
             'nav'        => array(
                 'title'       => __('Navigation Options', MP_DOMAIN),
-                'description' => __(
-                    'Options for comic navigation. Whether to have navigation'
-                    . ' automatically inserted on comic pages, or to enable/disable'
-                    . ' default comic navigation CSS.',
-                    MP_DOMAIN
-                ),
+                'description' => __('Options for comic navigation. Whether to have navigation automatically inserted on comic pages, or to enable/disable default comic navigation CSS.', MP_DOMAIN),
             ),
         );
 
@@ -361,7 +341,7 @@ class MangaPress_Options extends Options
 
         $class = ucwords($option['type']);
         $value = $mp_options[$option['section']][$option['name']];
-
+        
         if ($class !== ""){
             $attributes  = array(
                 'name'  => "mangapress_options[{$option['section']}][{$option['name']}]",
@@ -542,6 +522,7 @@ ul.comic-nav li:before{ content: ""; }
                 'make_thumb'          => intval($options['comic_page']['make_thumb']),
                 'banner_width'        => intval($options['comic_page']['banner_width']),
                 'banner_height'       => intval($options['comic_page']['banner_height']),
+                'comic_post_count'    => intval($options['comic_page']['comic_post_count']),
                 'generate_comic_page' => intval($options['comic_page']['generate_comic_page']),
                 'comic_page_width'    => intval($options['comic_page']['comic_page_width']),
                 'comic_page_height'   => intval($options['comic_page']['comic_page_height']),
