@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Manga+Press Comic Manager 2.7x\n"
 "Report-Msgid-Bugs-To: http://wordpress.org/tag/mangapress\n"
-"POT-Creation-Date: 2012-09-12 23:38:24+00:00\n"
-"PO-Revision-Date: 2012-09-12 19:07-0600\n"
+"POT-Creation-Date: 2012-10-21 20:35:47+00:00\n"
+"PO-Revision-Date: 2012-10-21 15:42-0600\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -29,28 +29,28 @@ msgstr "Imagen de C&oacute;mica"
 msgid "Name cannot be null."
 msgstr "El nombre no puede ser nulo."
 
-#: includes/template-functions.php:193 includes/template-functions.php:194
+#: includes/template-functions.php:194 includes/template-functions.php:195
 msgid "First"
 msgstr "Primero"
 
-#: includes/template-functions.php:199 includes/template-functions.php:200
+#: includes/template-functions.php:200 includes/template-functions.php:201
 msgid "Last"
 msgstr "&uacute;ltimo"
 
-#: includes/template-functions.php:204 includes/template-functions.php:205
+#: includes/template-functions.php:205 includes/template-functions.php:206
 msgid "Next"
 msgstr "Pr&oacute;ximo"
 
-#: includes/template-functions.php:209 includes/template-functions.php:210
+#: includes/template-functions.php:210 includes/template-functions.php:211
 msgid "Prev"
 msgstr "Anterior"
 
-#: mangapress-install.php:74
+#: mangapress-install.php:75
 msgid "Sorry, you do not have suffient permissions to activate this plugin."
 msgstr ""
 "Lo sentimos, usted no tiene los permisos necesarios para activar este plugin."
 
-#: mangapress-install.php:81
+#: mangapress-install.php:82
 msgid "Sorry, you must be an Administrator in order to use Manga+Press"
 msgstr ""
 "Lo sentimos, debe ser un administrador con el fin de utilizar Manga+Press"
@@ -72,98 +72,116 @@ msgid "Group Comics"
 msgstr "Comics Group"
 
 #: mangapress-options.php:144
-msgid "Group comics by category."
-msgstr "Grupo de c&oacute;mics por categor&iacute;a."
+msgid ""
+"Group comics by category. This option will ignore the parent category, and "
+"group according to the child-category."
+msgstr ""
+"Grupo de c&oacute;mics por categoría. Esta opci&oacute;n har&aacute; caso de "
+"la categor&iacute;a padre, y el grupo de acuerdo a la categor&iacute;a de "
+"ni&ntilde;os."
 
 #: mangapress-options.php:151
+msgid "Use Parent Category"
+msgstr "Use Parent Category"
+
+#: mangapress-options.php:153
+msgid ""
+"Group comics by top-most parent category. Use this option if you have sub-"
+"categories but want your navigation to function using the parent category."
+msgstr ""
+"Grupo de c&oacute;mics por categoría principal de m&aacute;s arriba. Utilice "
+"esta opci&oacute;n si tiene sub-categor&iacute;as, pero quiere que su "
+"navegaci&oacute;n funcione con la categor&iacute;a padre."
+
+#: mangapress-options.php:160
 msgid "Latest Comic Page"
 msgstr "&uacute;ltima P&aacute;gina c&oacute;mica"
 
-#: mangapress-options.php:153 mangapress-options.php:173
+#: mangapress-options.php:162 mangapress-options.php:182
 msgid "Select a Page"
 msgstr "Seleccionar una p&aacute;gina"
 
-#: mangapress-options.php:162 mangapress-options.php:182
+#: mangapress-options.php:171 mangapress-options.php:191
 msgid "Use Template"
 msgstr "Utilizar una plantilla"
 
-#: mangapress-options.php:163
+#: mangapress-options.php:172
 msgid "Use theme template for Latest Comic Page."
 msgstr "Use la plantilla para lo &uacute;ltimo tema P&aacute;gina Comic."
 
-#: mangapress-options.php:171
+#: mangapress-options.php:180
 msgid "Comic Archive Page"
 msgstr "P&aacute;gina Archive c&oacute;mica"
 
-#: mangapress-options.php:183
+#: mangapress-options.php:192
 #, fuzzy
 msgid "Use theme template for Comic Archive Page."
 msgstr "P&aacute;gina Archive c&oacute;mica"
 
-#: mangapress-options.php:193
+#: mangapress-options.php:202
 msgid "Banner Width"
 msgstr "Banner Ancho"
 
-#: mangapress-options.php:201
+#: mangapress-options.php:210
 msgid "Banner Height"
 msgstr "Banner Altura"
 
-#: mangapress-options.php:209
+#: mangapress-options.php:218
 msgid "Comic Posts to Display"
 msgstr "Cantidad de env&iacute;os c&oacute;mica para mostrar"
 
-#: mangapress-options.php:210
+#: mangapress-options.php:219
 msgid "Overrides values set in Reading Settings."
 msgstr "Anula los valores establecidos en la configuraci&oacute;n de lectura."
 
-#: mangapress-options.php:218
+#: mangapress-options.php:227
 msgid "Generate Comic Page"
 msgstr "Generar una p&aacute;gina de c&oacute;mica"
 
-#: mangapress-options.php:219
+#: mangapress-options.php:228
 msgid "Generate a comic page based on values below."
 msgstr ""
 "Genere una p&aacute;gina de c&oacute;mic basado en los valores de abajo."
 
-#: mangapress-options.php:227
+#: mangapress-options.php:236
 msgid "Comic Page Width"
 msgstr "Ancho de p&aacute;gina c&oacute;mica"
 
-#: mangapress-options.php:235
+#: mangapress-options.php:244
 msgid "Comic Page Height"
 msgstr "Altura p&aacute;gina c&oacute;mica"
 
-#: mangapress-options.php:244
+#: mangapress-options.php:253
 msgid "Insert Navigation"
 msgstr "Inserte navegaci&oacute;n"
 
-#: mangapress-options.php:245
+#: mangapress-options.php:254
 msgid "Automatically insert comic navigation code into comic posts."
 msgstr ""
 "Insertar autom&aacute;ticamente c&oacute;digo de navegaci&oacute;n c&oacute;"
 "mic en puestos de historietas."
 
-#: mangapress-options.php:253
+#: mangapress-options.php:262
 msgid "Navigation CSS"
 msgstr "Navegaci&oacute;n CSS"
 
-#: mangapress-options.php:254
+#: mangapress-options.php:263
 msgid "Turn this off. You know you want to!"
 msgstr "Turn this off. You know you want to!"
 
-#: mangapress-options.php:257
+#: mangapress-options.php:266
 msgid "Custom CSS"
 msgstr "Custom CSS"
 
-#: mangapress-options.php:258
+#: mangapress-options.php:267
 msgid "Default CSS"
 msgstr "Default CSS"
 
-#: mangapress-options.php:285
+#: mangapress-options.php:294
 msgid "Basic Options"
 msgstr "Opciones b&aacute;sicas"
 
-#: mangapress-options.php:286
+#: mangapress-options.php:295
 msgid ""
 "This section sets the &ldquo;Latest-&rdquo; and &ldquo;Comic Archive&rdquo; "
 "pages, number of comics per page, and grouping comics together by category."
@@ -172,11 +190,11 @@ msgstr ""
 "Comic p&aacute;ginas, n&uacute;mero de c&oacute;mics por p&aacute;gina, y "
 "agrupar los comics juntos por categor&iacute;a."
 
-#: mangapress-options.php:289
+#: mangapress-options.php:298
 msgid "Comic Page Options"
 msgstr "Opciones de c&oacute;mica p&aacute;gina"
 
-#: mangapress-options.php:290
+#: mangapress-options.php:299
 msgid ""
 "Handles image sizing options for comic pages. Thumbnail support may need to "
 "be enabled for some features to work properly. If page- or thumbnail sizes "
@@ -190,11 +208,11 @@ msgstr ""
 "como Regenerar miniaturas se pueden utilizar para crear las miniaturas "
 "nuevas."
 
-#: mangapress-options.php:293
+#: mangapress-options.php:302
 msgid "Navigation Options"
 msgstr "Opciones de navegaci&oacute;n"
 
-#: mangapress-options.php:294
+#: mangapress-options.php:303
 msgid ""
 "Options for comic navigation. Whether to have navigation automatically "
 "inserted on comic pages, or to enable/disable default comic navigation CSS."
@@ -204,7 +222,7 @@ msgstr ""
 "historietas, o para activar / desactivar por defecto c&oacute;mico "
 "navegaci&oacute;n CSS."
 
-#: mangapress-options.php:426
+#: mangapress-options.php:415
 msgid ""
 "Copy and paste this code into the <code>style.css</code> file of your theme."
 msgstr ""
@@ -225,14 +243,6 @@ msgstr "Eliminar imagen c&oacute;mica"
 #: pages/options.php:21 pages/options.php:22
 msgid "Manga+Press Options"
 msgstr "Opciones Manga+Press"
-
-#: pages/scripts/page.options.php:28
-msgid "Save Settings"
-msgstr "Save Settings"
-
-#: pages/scripts/page.options.php:29
-msgid "Reset Defaults"
-msgstr "Reset Defaults"
 
 #: themes/mp-default/comics/comic-archive.php:57
 #: themes/mp-default/comics/latest-comic.php:34
@@ -266,7 +276,7 @@ msgstr "Gerente C&oacute;mica Manga+Press"
 
 #. Plugin URI of the plugin/theme
 msgid "http://manga-press.jes.gs/"
-msgstr "http://manga-press.jes.gs/"
+msgstr "http://www.manga-press.com/"
 
 #. Description of the plugin/theme
 msgid ""
@@ -284,3 +294,12 @@ msgstr "Jessica Green"
 #. Author URI of the plugin/theme
 msgid "http://www.jes.gs"
 msgstr "http://www.jes.gs"
+
+#~ msgid "Group comics by category."
+#~ msgstr "Grupo de c&oacute;mics por categor&iacute;a."
+
+#~ msgid "Save Settings"
+#~ msgstr "Save Settings"
+
+#~ msgid "Reset Defaults"
+#~ msgstr "Reset Defaults"
