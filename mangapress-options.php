@@ -136,12 +136,21 @@ class MangaPress_Options extends Options
                     'default' => 'post_date',
                     'callback' => array($this, 'settings_field_cb'),
                 ),
-                'group_comics'      => array( // New options in 3.0
+                'group_comics'      => array(
                     'id'    => 'group-comics',
                     'type'  => 'checkbox',
                     'title' => __('Group Comics', MP_DOMAIN),
                     'valid' => 'boolean',
-                    'description' => __('Group comics by category.', MP_DOMAIN),
+                    'description' => __('Group comics by category. This option will ignore the parent category, and group according to the child-category.', MP_DOMAIN),
+                    'default' => 1,
+                    'callback' => array($this, 'settings_field_cb'),
+                ),
+                'group_by_parent'      => array(
+                    'id'    => 'group-by-parent',
+                    'type'  => 'checkbox',
+                    'title' => __('Use Parent Category', MP_DOMAIN),
+                    'valid' => 'boolean',
+                    'description' => __('Group comics by top-most parent category. Use this option if you have sub-categories but want your navigation to function using the parent category.', MP_DOMAIN),
                     'default' => 1,
                     'callback' => array($this, 'settings_field_cb'),
                 ),
@@ -499,9 +508,10 @@ ul.comic-nav li:before{ content: ""; }
             //
             // Converting the values to their correct data-types should be enough for now...
             $new_options['basic'] = array(
-                'order_by'           => (in_array($options['basic']['order_by'], $order_by_values))
+                'order_by'        => (in_array($options['basic']['order_by'], $order_by_values))
                                             ? strval($options['basic']['order_by']) : 'post_date',
-                'group_comics'       => intval($options['basic']['group_comics']),
+                'group_comics'    => intval($options['basic']['group_comics']),
+                'group_by_parent' => intval($options['basic']['group_by_parent']),
             );
 
             if ($options['basic']['latestcomic_page'] !== 'no_val'){

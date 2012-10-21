@@ -82,7 +82,7 @@ if (!function_exists('is_comic_archive_page')) {
 }
 
 /**
- * wp_comic_navigation()
+ * mangapress_comic_navigation()
  *
  * Displays navigation for post specified by $post_id.
  *
@@ -128,14 +128,15 @@ function mangapress_comic_navigation(WP_Query $query = null, $args = array(), $e
         global $post;
 
         $group = (bool)$mp_options['basic']['group_comics'];
+        $by_parent = (bool)$mp_options['basic']['group_by_parent'];
 
-        $next_post  = mpp_get_adjacent_comic($group, 'mangapress_series', null, false);
-        $prev_post  = mpp_get_adjacent_comic($group, 'mangapress_series', null, true);
-        $last_post  = mpp_get_boundary_comic($group, 'mangapress_series', null, false);
-        $first_post = mpp_get_boundary_comic($group, 'mangapress_series', null, true);
+        $next_post  = mpp_get_adjacent_comic($group, $by_parent, 'mangapress_series', null, false);
+        $prev_post  = mpp_get_adjacent_comic($group, $by_parent, 'mangapress_series', null, true);
+        $last_post  = mpp_get_boundary_comic($group, $by_parent, 'mangapress_series', null, false);
+        $first_post = mpp_get_boundary_comic($group, $by_parent, 'mangapress_series', null, true);
 
         $current_page = $post->ID; // use post ID this time.
-//        var_dump($first_post); die();
+
         $next_page = !isset($next_post->ID)
                    ? $current_page : $next_post->ID;
 
