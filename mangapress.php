@@ -3,14 +3,14 @@
  * @package Manga_Press
  * @version $Id$
  * @author Jessica Green <jgreen@psy-dreamer.com>
- * 
+ *
  * @todo Update screenshots
  * @todo Update PHPDoc comments
  */
 /*
  Plugin Name: Manga+Press Comic Manager
  Plugin URI: http://www.manga-press.com/
- Description: Turns WordPress into a full-featured Webcomic Manager. Be sure to visit <a href="http://manga-press.jes.gs/">Manga+Press</a> for more info.
+ Description: Turns WordPress into a full-featured Webcomic Manager. Be sure to visit <a href="http://www.manga-press.com/">Manga+Press</a> for more info.
  Version: 2.7.3
  Author: Jessica Green
  Author URI: http://www.jes.gs
@@ -80,7 +80,7 @@ add_action('setup_theme', array('MangaPress_Bootstrap', 'setup_theme'));
 
 /**
  * Plugin bootstrap class.
- * 
+ *
  * @package MangaPress
  * @subpackage MangaPress_Bootstrap
  * @author Jess Green <jgreen@psy-dreamer.com>
@@ -96,7 +96,7 @@ class MangaPress_Bootstrap
      * @var \MangaPress_Posts
      */
     protected $_posts;
-    
+
     /**
      * Static function used to initialize Bootstrap
      *
@@ -105,7 +105,7 @@ class MangaPress_Bootstrap
     public static function init()
     {
         global $mp, $options_page;
-        
+
         self::set_options();
 
         load_plugin_textdomain(MP_DOMAIN, false, MP_LANG);
@@ -114,11 +114,11 @@ class MangaPress_Bootstrap
         $mp->_posts   = new MangaPress_Posts();
         $options_page = new MangaPress_Options();
     }
-    
+
     /**
      * Because register_theme_directory() can't run on init.
-     * 
-     * @return void 
+     *
+     * @return void
      */
     public static function setup_theme()
     {
@@ -139,9 +139,9 @@ class MangaPress_Bootstrap
          * Navigation style
          */
         wp_register_style('mangapress-nav', MP_URLPATH . 'css/nav.css', null, MP_VERSION, 'screen');
-        
+
         add_action('template_include', 'mpp_comic_single_page');
-        
+
         /*
          * Disable/Enable Default Navigation CSS
          */
@@ -161,7 +161,7 @@ class MangaPress_Bootstrap
                 && !(bool)$mp_options['basic']['latestcomic_page_template']) {
             add_filter('the_content', 'mpp_filter_latest_comic');
         }
-        
+
         /*
          * Latest Comic Page template override
          */
@@ -171,17 +171,17 @@ class MangaPress_Bootstrap
         /*
          * Comic Archive Page
          */
-        if ((bool)$mp_options['basic']['comicarchive_page'] 
+        if ((bool)$mp_options['basic']['comicarchive_page']
                 && !(bool)$mp_options['basic']['comicarchive_page_template']) {
             add_filter('the_content', 'mpp_filter_comic_archivepage');
         }
-        
+
         /*
          * Comic Archive Page template override
          */
         if ((bool)$mp_options['basic']['comicarchive_page_template'])
             add_filter('template_include', 'mpp_comic_archivepage');
-            
+
         /*
          * Comic Thumbnail Banner
          */
@@ -208,20 +208,20 @@ class MangaPress_Bootstrap
                 false
             );
         }
-        
+
         if (get_option('mangapress_upgrade') == 'yes') {
             MangaPress_Install::do_upgrade();
         }
 
     }
-    
+
     /**
      * Set MangaPress options. This method should run every time
      * MangaPress options are updated.
-     * 
+     *
      * @uses init()
      * @see MangaPress_Bootstrap::init()
-     * 
+     *
      * @return void
      */
     public static function set_options()

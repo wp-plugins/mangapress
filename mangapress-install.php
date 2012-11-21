@@ -37,10 +37,10 @@ class MangaPress_Install
                 'order_by'                   => 'post_date',
                 'group_comics'               => 0,
                 'group_by_parent'            => 0,
-                'latestcomic_page'           => 0,
-                'comicarchive_page'          => 0,
+                'latestcomic_page'           => '',
+                'comicarchive_page'          => '',
                 'latestcomic_page_template'  => 0,
-                'comicarchive_page_template' => 0,				
+                'comicarchive_page_template' => 0,
             ),
             'comic_page' => array(
                 'make_thumb'          => 0,
@@ -95,13 +95,13 @@ class MangaPress_Install
         // version_compare will still evaluate against an empty string
         // so we have to tell it not to.
         if (version_compare(self::$_version, MP_VERSION, '<') && !(self::$_version == '')) {
-                        
+
             add_option( 'mangapress_upgrade', 'yes', '', 'no');
 
         } elseif (self::$_version == '') {
 
             add_option( 'mangapress_ver', MP_VERSION, '', 'no');
-            add_option( 'mangapress_options', serialize( self::$_default_options ), '', 'no' );
+            add_option( 'mangapress_options', self::$_default_options, '', 'no' );
 
         }
 
@@ -129,17 +129,17 @@ class MangaPress_Install
         $options = get_option('mangapress_options');
 
         // add new option to the array
-        $options['basic']['group_by_parent'] = self::$_default_options['basic']['group_by_parent'];
-        
+//        $options['basic']['group_by_parent'] = self::$_default_options['basic']['group_by_parent'];
+
         update_option( 'mangapress_options', $options);
         update_option('mangapress_ver', MP_VERSION);
-        
+
         delete_option( 'mangapress_upgrade' );
     }
-    
+
     /**
      * Returns default options
-     * 
+     *
      * @return array
      */
     public static function get_default_options()
