@@ -2,8 +2,8 @@
 Contributors: Jess Green
 Donate link: http://www.manga-press.com/
 Tags: webcomics, online comics
-Requires at least: 3.4.2
-Tested up to: 3.5-beta-3
+Requires at least: 3.5
+Tested up to: 3.5.1
 Stable tag: 2.7.3
 License: GPLv2
 
