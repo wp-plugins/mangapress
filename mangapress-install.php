@@ -37,10 +37,10 @@ class MangaPress_Install
                 'order_by'                   => 'post_date',
                 'group_comics'               => 0,
                 'group_by_parent'            => 0,
-                'latestcomic_page'           => '',
-                'comicarchive_page'          => '',
+                'latestcomic_page'           => 0,
+                'comicarchive_page'          => 0,
                 'latestcomic_page_template'  => 0,
-                'comicarchive_page_template' => 0,
+                'comicarchive_page_template' => 0,				
             ),
             'comic_page' => array(
                 'make_thumb'          => 0,
@@ -66,7 +66,7 @@ class MangaPress_Install
      */
     public static function do_activate()
     {
-        global $wp_rewrite, $wp_version;
+        global $wp_version;
 
         require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
@@ -81,8 +81,6 @@ class MangaPress_Install
         if ( empty($role) )
             wp_die( __('Sorry, you must be an Administrator in order to use Manga+Press', 'mangapress') );
 
-        $wp_rewrite->flush_rules();
-
         if ( version_compare ($wp_version, '3.0', '<=')) {
             wp_die(
                   'Sorry, only WordPress 3.0 and later are supported.'
@@ -95,15 +93,21 @@ class MangaPress_Install
         // version_compare will still evaluate against an empty string
         // so we have to tell it not to.
         if (version_compare(self::$_version, MP_VERSION, '<') && !(self::$_version == '')) {
-
+                        
             add_option( 'mangapress_upgrade', 'yes', '', 'no');
 
         } elseif (self::$_version == '') {
 
             add_option( 'mangapress_ver', MP_VERSION, '', 'no');
-            add_option( 'mangapress_options', self::$_default_options, '', 'no' );
+            add_option( 'mangapress_options', serialize( self::$_default_options ), '', 'no' );
 
         }
+
+        // this addresses issue #7 on GitHub. This action only runs
+        // on activation, and is removed with the next page load
+        // but it clears/resets the permalink cache so you can view your
+        // comic.
+        add_action('init', 'flush_rewrite_rules');
 
     }
 
@@ -114,9 +118,7 @@ class MangaPress_Install
      */
     public static function do_deactivate()
     {
-        global $wp_rewrite;
-
-        $wp_rewrite->flush_rules();
+        flush_rewrite_rules();
     }
 
     /**
@@ -128,18 +130,14 @@ class MangaPress_Install
     {
         $options = get_option('mangapress_options');
 
-        // add new option to the array
-        $options['basic']['group_by_parent'] = self::$_default_options['basic']['group_by_parent'];
-
-        update_option( 'mangapress_options', $options);
         update_option('mangapress_ver', MP_VERSION);
-
+        
         delete_option( 'mangapress_upgrade' );
     }
-
+    
     /**
      * Returns default options
-     *
+     * 
      * @return array
      */
     public static function get_default_options()
@@ -147,4 +145,3 @@ class MangaPress_Install
         return self::$_default_options;
     }
 }
-?>

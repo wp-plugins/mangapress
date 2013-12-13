@@ -1,7 +1,5 @@
 <?php
 /**
- * MangaPress
- * 
  * @package Manga_Press
  * @version $Id$
  * @author Jessica Green <jgreen@psy-dreamer.com>
@@ -10,12 +8,11 @@ require_once 'pages/options.php';
 
 /**
  * MangaPress Options class
- *
  * @package MangaPress
  * @subpackage MangaPress_Options
  * @author Jessica Green <jgreen@psy-dreamer.com>
  */
-class MangaPress_Options extends Options
+class MangaPress_Settings extends MangaPress_Options
 {
     /**
      * Options page View object
@@ -105,7 +102,7 @@ class MangaPress_Options extends Options
      */
     public function get_view()
     {
-        if (!($this->_view instanceof View)) {
+        if (!($this->_view instanceof MangaPress_View)) {
             return new WP_Error('not_view', '$this->_view is not an instance of View');
         }
 
@@ -142,7 +139,7 @@ class MangaPress_Options extends Options
                 'group_comics'      => array(
                     'id'    => 'group-comics',
                     'type'  => 'checkbox',
-                    'title' => __('Group Comics By Category', MP_DOMAIN),
+                    'title' => __('Group Comics', MP_DOMAIN),
                     'valid' => 'boolean',
                     'description' => __('Group comics by category. This option will ignore the parent category, and group according to the child-category.', MP_DOMAIN),
                     'default' => 1,
@@ -151,7 +148,7 @@ class MangaPress_Options extends Options
                 'group_by_parent'      => array(
                     'id'    => 'group-by-parent',
                     'type'  => 'checkbox',
-                    'title' => __('Group Comics by Parent Category', MP_DOMAIN),
+                    'title' => __('Use Parent Category', MP_DOMAIN),
                     'valid' => 'boolean',
                     'description' => __('Group comics by top-most parent category. Use this option if you have sub-categories but want your navigation to function using the parent category.', MP_DOMAIN),
                     'default' => 1,
@@ -361,7 +358,8 @@ class MangaPress_Options extends Options
                 'value' => $value,
             );
 
-            echo new $class(array(
+            $element = "MangaPress_{$class}";
+            echo new $element(array(
                 'attributes'  => $attributes,
                 'description' => isset($option['description']) ? $option['description'] : '',
                 'default'     => isset($option['value']) ? $option['value'] : $option['default'],
@@ -391,7 +389,7 @@ class MangaPress_Options extends Options
             $options[$page->post_name] = $page->post_title;
         }
 
-        echo new Select(array(
+        echo new MangaPress_Select(array(
             'attributes'  => array(
                 'name'  => "mangapress_options[{$option['section']}][{$option['name']}]",
                 'id'    => $option['id'],
@@ -477,9 +475,9 @@ ul.comic-nav li:before{ content: ""; }
     /**
      * Sanitizes options before DB commit.
      *
-     * @global MangaPress_Bootstrap $mp
-     * @param array $options Options array
-     * @return array
+     * @global type $mp
+     * @param type $options Options array
+     * @return type array
      */
     public function sanitize_options($options)
     {
@@ -513,43 +511,41 @@ ul.comic-nav li:before{ content: ""; }
             $new_options['basic'] = array(
                 'order_by'        => (in_array($options['basic']['order_by'], $order_by_values))
                                             ? strval($options['basic']['order_by']) : 'post_date',
-                'group_comics'    => isset($options['basic']['group_comics'])
-                                        ? intval($options['basic']['group_comics']) : 0,
+                'group_comics'    => isset($options['basic']['group_comics']) 
+                                                ? intval($options['basic']['group_comics']) : 0,
                 'group_by_parent' => isset($options['basic']['group_by_parent'])
-                                        ? intval($options['basic']['group_by_parent']) : 0,
+                                            ? intval($options['basic']['group_by_parent']) : 0,
             );
 
             if ($options['basic']['latestcomic_page'] !== 'no_val'){
                 $new_options['basic']['latestcomic_page'] = $options['basic']['latestcomic_page'];
-            } else {
-                $new_options['basic']['latestcomic_page'] = '';
             }
 
             $new_options['basic']['latestcomic_page_template'] = isset($options['basic']['latestcomic_page_template'])
-                                                                    ? intval($options['basic']['latestcomic_page_template']) : 0;
+                                                                ? intval($options['basic']['latestcomic_page_template']) : 0;
 
             if ($options['basic']['comicarchive_page'] !== 'no_val'){
                 $new_options['basic']['comicarchive_page'] = $options['basic']['comicarchive_page'];
-            } else {
-                $new_options['basic']['comicarchive_page'] = '';
             }
 
-            $new_options['basic']['comicarchive_page_template'] = isset($options['basic']['comicarchive_page_template'])
+            $new_options['basic']['comicarchive_page_template'] = isset($options['basic']['comicarchive_page_template']) 
                                                                     ? intval($options['basic']['comicarchive_page_template']) : 0;
         }
 
         if ($section == 'comic_page') {
             $new_options['comic_page'] = array(
-                'make_thumb'          => intval($options['comic_page']['make_thumb']),
+                'make_thumb'          => isset($options['comic_page']['make_thumb'])
+                                            ? intval($options['comic_page']['make_thumb']) : 0,
                 'banner_width'        => intval($options['comic_page']['banner_width']),
                 'banner_height'       => intval($options['comic_page']['banner_height']),
                 'comic_post_count'    => intval($options['comic_page']['comic_post_count']),
-                'generate_comic_page' => intval($options['comic_page']['generate_comic_page']),
+                'generate_comic_page' => isset($options['comic_page']['generate_comic_page']) 
+                                            ? intval($options['comic_page']['generate_comic_page']) : 0,
                 'comic_page_width'    => intval($options['comic_page']['comic_page_width']),
                 'comic_page_height'   => intval($options['comic_page']['comic_page_height']),
             );
         }
-
+        
         $options = array_merge($mp_options, $new_options);
 
         return $options;
@@ -557,4 +553,3 @@ ul.comic-nav li:before{ content: ""; }
     }
 
 }
-?>

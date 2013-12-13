@@ -11,12 +11,12 @@
  Plugin Name: Manga+Press Comic Manager
  Plugin URI: http://www.manga-press.com/
  Description: Turns WordPress into a full-featured Webcomic Manager. Be sure to visit <a href="http://www.manga-press.com/">Manga+Press</a> for more info.
- Version: 2.7.3
+ Version: 2.7.5
  Author: Jessica Green
  Author URI: http://www.jes.gs
 */
 /*
- * (c) 2008 - 2012 Jessica C Green
+ * (c) 2013 Jessica C Green
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,7 +38,7 @@ if(preg_match('#' . basename(__FILE__) . '#', $_SERVER['PHP_SELF']))
 $plugin_folder = plugin_basename(dirname(__FILE__));
 
 if (!defined('MP_VERSION'))
-    define('MP_VERSION', '2.7.3');
+    define('MP_VERSION', '2.7.5');
 
 if (!defined('MP_DB_VERSION'))
     define('MP_DB_VERSION', '1.1');
@@ -47,10 +47,10 @@ if (!defined('MP_FOLDER'))
     define('MP_FOLDER', $plugin_folder);
 
 if (!defined('MP_ABSPATH'))
-    define('MP_ABSPATH', WP_CONTENT_DIR . '/plugins/' . $plugin_folder . '/');
+    define('MP_ABSPATH', plugin_dir_path(__FILE__));
 
 if (!defined('MP_URLPATH'))
-    define('MP_URLPATH', WP_CONTENT_URL . '/plugins/' . $plugin_folder . '/');
+    define('MP_URLPATH', plugin_dir_url(__FILE__));
 
 if (!defined('MP_LANG'))
     define('MP_LANG', $plugin_folder . '/lang');
@@ -63,7 +63,7 @@ include_once('framework/PostType.php');
 include_once('framework/Taxonomy.php');
 include_once('framework/View.php');
 include_once('framework/Options.php');
-include_once('framework/Form.php');
+include_once('framework/Form/Element.php');
 
 include_once('includes/functions.php');
 include_once('includes/template-functions.php');
@@ -88,6 +88,11 @@ add_action('setup_theme', array('MangaPress_Bootstrap', 'setup_theme'));
 class MangaPress_Bootstrap
 {
 
+    /**
+     * Options array
+     *
+     * @var array
+     */
     protected static $_options;
 
     /**
@@ -112,7 +117,7 @@ class MangaPress_Bootstrap
 
         $mp           = new MangaPress_Bootstrap();
         $mp->_posts   = new MangaPress_Posts();
-        $options_page = new MangaPress_Options();
+        $options_page = new MangaPress_Settings();
     }
 
     /**
@@ -126,12 +131,12 @@ class MangaPress_Bootstrap
     }
 
     /**
+     * PHP5 constructor method
      *
      * @return void
      */
     public function __construct()
     {
-
 
         $mp_options = $this->get_options();
 
@@ -239,10 +244,14 @@ class MangaPress_Bootstrap
         return self::$_options;
     }
 
+    /**
+     * Enqueue default navigation stylesheet
+     *
+     * @return void
+     */
     public function wp_enqueue_scripts()
     {
         wp_enqueue_style('mangapress-nav');
     }
 
 }
-?>
