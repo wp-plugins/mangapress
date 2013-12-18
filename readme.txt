@@ -1,5 +1,5 @@
 === Manga+Press Comic Manager ===
-Contributors: jess_green
+Contributors: ArdathkSheyna
 Donate link: http://www.manga-press.com/
 Tags: webcomics, online comics
 Requires at least: 3.5
