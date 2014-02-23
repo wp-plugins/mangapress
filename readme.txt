@@ -7,11 +7,11 @@ Tested up to: 3.8
 Stable tag: 2.8
 License: GPLv2
 
-Manga+Press is a webcomic management system for WordPress.
+Manga+Press: the webcomic management system for WordPress.
 
 == Description ==
 
-Manga+Press is a webcomic managment system for WordPress. Manga+Press uses WordPress posts, pages and categories to help you
+Manga+Press is a webcomic managment system for WordPress. Manga+Press uses WordPress' custom post-types and taxonomies to help you
 keep track of your comic posts. Manga+Press also includes its own custom template tags to help make creating themes easier.
 
 == Upgrade Notice ==
