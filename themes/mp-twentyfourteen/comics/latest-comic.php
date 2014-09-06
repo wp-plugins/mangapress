@@ -11,8 +11,7 @@ get_header(); ?>
 <div id="main-content" class="main-content">
     <div id="primary" class="content-area">
         <div id="content" class="site-content" role="main">
-        <?php die('here');
-            mpp_start_latest_comic();
+        <?php mpp_start_latest_comic();
             while (have_posts()) : the_post(); ?>
                 <article id="post-<?php the_ID(); ?>" <?php post_class(); ?>>
                     <?php twentyfourteen_post_thumbnail(); ?>
