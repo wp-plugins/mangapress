@@ -3,18 +3,22 @@ Contributors: ArdathkSheyna
 Donate link: http://www.manga-press.com/
 Tags: webcomics, online comics
 Requires at least: 3.8
-Tested up to: 3.8
-Stable tag: 2.8
+Tested up to: 4.0
+Stable tag: 2.8.1
 License: GPLv2
 
-Manga+Press: the webcomic management system for WordPress.
+Manga+Press is a webcomic management system for WordPress.
 
 == Description ==
 
-Manga+Press is a webcomic managment system for WordPress. Manga+Press uses WordPress' custom post-types and taxonomies to help you
+Manga+Press is a webcomic managment system for WordPress. Manga+Press uses WordPress posts, pages and categories to help you
 keep track of your comic posts. Manga+Press also includes its own custom template tags to help make creating themes easier.
 
 == Upgrade Notice ==
+= 2.8.1 =
+   * Corrected E_STRICT notice on plugin activation
+   * Updated font icons
+
 = 2.8 =
    * Added bundled child-themes for TwentyEleven, TwentyTwelve, TwentyThirteen, and TwentyFourteen
    * Corrected 404 issues for custom post-type after activation
@@ -49,6 +53,10 @@ keep track of your comic posts. Manga+Press also includes its own custom templat
 
 
 == Changelog ==
+= 2.8.1 =
+   * Corrected E_STRICT notice on plugin activation
+   * Updated font icons
+
 = 2.8 =
    * Added bundled theme for TwentyEleven, TwentyTwelve, and TwentyThirteen
    * Corrected 404 issues for custom post-type after activation
