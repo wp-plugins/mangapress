@@ -59,6 +59,10 @@ keep track of your comic posts. Manga+Press also includes its own custom templat
 
 
 == Changelog ==
+= 2.8.2 =
+   * Correcting Latest Comic template error when Latest Comic is used as front page.
+   * Updating Spanish Language files
+
 = 2.8.1 =
    * Corrected E_STRICT notice on plugin activation
    * Updated font icons
